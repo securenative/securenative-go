@@ -2,6 +2,7 @@ package snlogic
 
 import (
 	"errors"
+	"fmt"
 	"github.com/securenative/securenative-go/models"
 )
 
@@ -18,9 +19,15 @@ type Securenative struct {
 	ApiKey       string
 }
 
+var instance *Securenative
+
 const signatureHeader = "x-securenative"
 
-func NewSecureNative(apiKey string, options *models.SecureNativeOptions) (SDK, error) {
+func Init(apiKey string, options *models.SecureNativeOptions) (SDK, error) {
+	if instance != nil {
+		return nil, errors.New("This SDK was already initialized")
+	}
+
 	if len(apiKey) == 0 {
 		return nil, errors.New("You must pass your SecureNative api key")
 	}
@@ -29,31 +36,50 @@ func NewSecureNative(apiKey string, options *models.SecureNativeOptions) (SDK, e
 		options = &models.SecureNativeOptions{}
 	}
 	manger := NewSnEventManger(apiKey, options)
-	return &Securenative{ApiKey: apiKey, SnOptions: options, EventManager: manger}, nil
+	IsLogEnabledFlag = options.IsLoggingEnabled
+	instance = &Securenative{ApiKey: apiKey, SnOptions: options, EventManager: manger}
+	SnLog("SN SDK was initialized")
+	return instance, nil
+}
+
+func GetInstance() (*Securenative, error) {
+	if instance == nil {
+		SnLog("SN SDK wasn't initialized")
+		return nil, errors.New("You should call init(api_key, options) before making any other sdk function call")
+	}
+	return instance, nil
 }
 
 func (this *Securenative) Verify(e models.SnEvent) *models.RiskResult {
+	SnLog(fmt.Sprintf("verify event call %v ", e))
 	return this.EventManager.SendSync(e, this.SnOptions.ApiUrl+"/verify")
 }
 
 func (this *Securenative) Track(e models.SnEvent) {
+	SnLog(fmt.Sprintf("track event call %v ", e))
 	this.EventManager.SendAsync(e, this.SnOptions.ApiUrl+"/track")
 }
 
 func (this *Securenative) Flow(flowId int64, e models.SnEvent) *models.RiskResult {
+	SnLog(fmt.Sprintf("flow event call %v ", e))
 	return this.EventManager.SendSync(e, this.SnOptions.ApiUrl+"/flow")
 }
 
 func (this *Securenative) IsRequestFromSn(snHeaderValue string, payload string) bool {
+	SnLog("verifying request from SN ")
+
 	if len(snHeaderValue) == 0 || len(payload) == 0 {
+		SnLog("payload or header are empty, verification failed")
 		return false
 	}
 	encrypted, err := Encrypt(string(payload), this.ApiKey)
 	if err == nil {
 		if encrypted == snHeaderValue {
+			SnLog("request was verified")
 			return true
 		}
 	}
+	SnLog("verification failed")
 	return false
 }
 

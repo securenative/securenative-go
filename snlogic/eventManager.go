@@ -3,6 +3,7 @@ package snlogic
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/securenative/securenative-go/models"
 	"io/ioutil"
 	"math/rand"
@@ -36,6 +37,8 @@ type SnEventManger struct {
 }
 
 func NewSnEventManger(apiKey string, options *models.SecureNativeOptions) (snEventManager EventManager) {
+	SnLog(fmt.Sprintf("intitalizing event manager"))
+
 	tempClient := http.Client{
 		Timeout: time.Duration(options.Timeout),
 	}
@@ -43,15 +46,18 @@ func NewSnEventManger(apiKey string, options *models.SecureNativeOptions) (snEve
 	snEventManager = &SnEventManger{ApiKey: apiKey, client: &tempClient, events: tempEvents, options: options}
 
 	if options != nil && options.IsSdkEnabled && options.AutoSend {
+		SnLog(fmt.Sprintf("Starting event auto send mechanism"))
 		go snEventManager.SendEventsFromChannel()
 	}
 	return
 }
 
 func (this *SnEventManger) SendEventsFromChannel() {
+
 	for {
 		time.Sleep(time.Duration(rand.Intn(10)) * time.Second)
 		m := <-this.events
+		SnLog(fmt.Sprintf("Sending async event %v ", m))
 		this.SendAsync(m.Event, m.Url)
 	}
 }
@@ -64,6 +70,7 @@ func (this *SnEventManger) SendSync(e models.SnEvent, requestUrl string) (riskRe
 	if err != nil {
 		return &defaultRiskResult
 	}
+	SnLog(fmt.Sprintf("Sending sync event %v ", e))
 	resp, err := this.client.Do(req)
 	if err != nil {
 		return &defaultRiskResult
@@ -77,6 +84,7 @@ func (this *SnEventManger) SendSync(e models.SnEvent, requestUrl string) (riskRe
 	if err != nil {
 		return &defaultRiskResult
 	}
+	SnLog(fmt.Sprintf("Response to sync event %v i %v", e, riskResult))
 	return
 }
 
