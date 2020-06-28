@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/securenative/securenative-go/models"
+	"github.com/securenative/securenative-go/securenative/models"
 	"io/ioutil"
 	"math/rand"
 	"net/http"

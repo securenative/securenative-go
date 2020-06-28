@@ -3,7 +3,7 @@ package snlogic
 import (
 	"errors"
 	"fmt"
-	"github.com/securenative/securenative-go/models"
+	"github.com/securenative/securenative-go/securenative/models"
 )
 
 type SDK interface {
