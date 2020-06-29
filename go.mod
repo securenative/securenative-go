@@ -2,4 +2,4 @@ module github.com/securenative/securenative-go
 
 go 1.12
 
-require github.com/mergermarket/go-pkcs7 v0.0.0-20170926155232-153b18ea13c9
+require github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
