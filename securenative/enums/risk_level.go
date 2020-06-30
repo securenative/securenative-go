@@ -1,9 +1,13 @@
 package enums
 
-type RiskLevel string
+type RiskLevelEnum struct {
+	Low    string
+	Medium string
+	High   string
+}
 
-const (
-	LOW    RiskLevel = "low"
-	MEDIUM RiskLevel = "medium"
-	HIGH   RiskLevel = "high"
-)
+var RiskLevel = RiskLevelEnum{
+	Low:    "low",
+	Medium: "medium",
+	High:   "high",
+}

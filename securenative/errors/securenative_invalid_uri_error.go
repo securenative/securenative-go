@@ -1,6 +1,8 @@
 package errors
 
-type SecureNativeInvalidUriError struct{}
+type SecureNativeInvalidUriError struct {
+	Msg string
+}
 
 func (e *SecureNativeInvalidUriError) Error() string {
 	return e.Error()

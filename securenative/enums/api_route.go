@@ -1,8 +1,11 @@
 package enums
 
-type ApiRoute string
+type ApiRouteEnum struct {
+	Track  string
+	Verify string
+}
 
-const (
-	TRACK  ApiRoute = "track"
-	VERIFY ApiRoute = "verify"
-)
+var ApiRoute = ApiRouteEnum{
+	Track:  "track",
+	Verify: "verify",
+}

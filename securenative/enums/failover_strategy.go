@@ -1,8 +1,11 @@
 package enums
 
-type FailOverStrategy string
+type FailOverStrategyEnum struct {
+	FailOpen  string
+	FailClose string
+}
 
-const (
-	FAIL_OPEN   FailOverStrategy = "fail-open"
-	FAIL_CLOSED FailOverStrategy = "fail-closed"
-)
+var FailOverStrategy = FailOverStrategyEnum{
+	FailOpen:  "fail-open",
+	FailClose: "fail-closed",
+}

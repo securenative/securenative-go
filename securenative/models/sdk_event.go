@@ -6,18 +6,17 @@ import (
 	. "github.com/securenative/securenative-go/securenative/context"
 	. "github.com/securenative/securenative-go/securenative/enums"
 	. "github.com/securenative/securenative-go/securenative/utils"
-	. "go/types"
 )
 
 type SDKEvent struct {
 	Context    *SecureNativeContext
 	Rid        string
-	EventType  EventTypes
+	EventType  string
 	UserId     string
 	UserTraits *UserTraits
 	Request    *RequestContext
 	Timestamp  string
-	Properties Slice
+	Properties map[string]string
 }
 
 func NewSDKEvent(eventOptions EventOptions, secureNativeOptions SecureNativeOptions) SDKEvent {
@@ -28,7 +27,7 @@ func NewSDKEvent(eventOptions EventOptions, secureNativeOptions SecureNativeOpti
 	if eventOptions.Context == nil {
 		event.Context = eventOptions.Context
 	} else {
-		event.Context = ContextBuilder.default_context_builder().build() // TODO check me
+		event.Context = ContextBuilder.DefaultContextBuilder().Build() // TODO check me
 	}
 
 	clientToken := encryptionUtils.Decrypt(event.Context.ClientToken, secureNativeOptions.ApiKey)

@@ -1,25 +1,45 @@
 package enums
 
-type EventTypes string
+type EventTypesEnum struct {
+	LogIn                string
+	LogInChallenge       string
+	LogInFailure         string
+	LogOut               string
+	SignUp               string
+	AuthChallenge        string
+	AuthChallengeSuccess string
+	AuthChallengeFailure string
+	TwoFactorDisable     string
+	EmailUpdate          string
+	PasswordRest         string
+	PasswordRestSuccess  string
+	PasswordUpdate       string
+	PasswordRestFailure  string
+	UserInvite           string
+	RoleUpdate           string
+	ProfileUpdate        string
+	PageView             string
+	Verify               string
+}
 
-const (
-	LOG_IN                 EventTypes = "sn.user.login"
-	LOG_IN_CHALLENGE       EventTypes = "sn.user.login.challenge"
-	LOG_IN_FAILURE         EventTypes = "sn.user.login.failure"
-	LOG_OUT                EventTypes = "sn.user.logout"
-	SIGN_UP                EventTypes = "sn.user.signup"
-	AUTH_CHALLENGE         EventTypes = "sn.user.auth.challenge"
-	AUTH_CHALLENGE_SUCCESS EventTypes = "sn.user.auth.challenge.success"
-	AUTH_CHALLENGE_FAILURE EventTypes = "sn.user.auth.challenge.failure"
-	TWO_FACTOR_DISABLE     EventTypes = "sn.user.2fa.disable"
-	EMAIL_UPDATE           EventTypes = "sn.user.email.update"
-	PASSWORD_REST          EventTypes = "sn.user.password.reset"
-	PASSWORD_REST_SUCCESS  EventTypes = "sn.user.password.reset.success"
-	PASSWORD_UPDATE        EventTypes = "sn.user.password.update"
-	PASSWORD_REST_FAILURE  EventTypes = "sn.user.password.reset.failure"
-	USER_INVITE            EventTypes = "sn.user.invite"
-	ROLE_UPDATE            EventTypes = "sn.user.role.update"
-	PROFILE_UPDATE         EventTypes = "sn.user.profile.update"
-	PAGE_VIEW              EventTypes = "sn.user.page.view"
-	VERIFY_EVENT           EventTypes = "sn.verify"
-)
+var EventTypes = EventTypesEnum{
+	LogIn:                "sn.user.login",
+	LogInChallenge:       "sn.user.login.challenge",
+	LogInFailure:         "sn.user.login.failure",
+	LogOut:               "sn.user.logout",
+	SignUp:               "sn.user.signup",
+	AuthChallenge:        "sn.user.auth.challenge",
+	AuthChallengeSuccess: "sn.user.auth.challenge.success",
+	AuthChallengeFailure: "sn.user.auth.challenge.failure",
+	TwoFactorDisable:     "sn.user.2fa.disable",
+	EmailUpdate:          "sn.user.email.update",
+	PasswordRest:         "sn.user.password.reset",
+	PasswordRestSuccess:  "sn.user.password.reset.success",
+	PasswordUpdate:       "sn.user.password.update",
+	PasswordRestFailure:  "sn.user.password.reset.failure",
+	UserInvite:           "sn.user.invite",
+	RoleUpdate:           "sn.user.role.update",
+	ProfileUpdate:        "sn.user.profile.update",
+	PageView:             "sn.user.page.view",
+	Verify:               "sn.verify",
+}

@@ -1,6 +1,8 @@
 package errors
 
-type SecureNativeParseError struct{}
+type SecureNativeParseError struct {
+	Msg string
+}
 
 func (e *SecureNativeParseError) Error() string {
 	return e.Error()
