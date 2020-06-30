@@ -1,25 +1,115 @@
 package config
 
-var DEFAULT_CONFIG_FILE = "securenative.ini"
-var CUSTOM_CONFIG_FILE_ENV_NAME = "SECURENATIVE_COMFIG_FILE"
+import (
+	"gopkg.in/yaml.v2"
+	"os"
+	"strconv"
+)
+
+var DefaultConfigFile = "securenative.yaml"
+var CustomConfigFileEnvName = "SECURENATIVE_COMFIG_FILE"
 
 type ConfigurationManagerInterface interface {
-	ConfigBuilder() *ConfigurationBuilder
 	LoadConfig() SecureNativeOptions
 }
 
-type ConfigurationManager struct {
-	// TODO implement me
-}
+type ConfigurationManager struct{}
 
 func NewConfigurationManager() *ConfigurationManager {
-	panic("implement me")
-}
-
-func (c *ConfigurationManager) ConfigBuilder() *ConfigurationBuilder {
-	panic("implement me")
+	return &ConfigurationManager{}
 }
 
 func (c *ConfigurationManager) LoadConfig() SecureNativeOptions {
-	panic("implement me")
+	configurationBuilder := NewConfigurationBuilder()
+	options := configurationBuilder.DefaultSecureNativeOptions()
+
+	resourcePath := DefaultConfigFile
+	if len(os.Getenv(CustomConfigFileEnvName)) > 0 {
+		resourcePath = DefaultConfigFile
+	}
+
+	properties := c.readResourceFile(resourcePath)
+
+	return configurationBuilder.
+		WithApiKey(c.getStringEnvOrDefault(properties, "SECURENATIVE_API_KEY", options.ApiKey)).
+		WithApiUrl(c.getStringEnvOrDefault(properties, "SECURENATIVE_API_URL", options.ApiUrl)).
+		WithInterval(c.getIntEnvOrDefault(properties, "SECURENATIVE_INTERVAL", options.Interval)).
+		WithMaxEvents(c.getIntEnvOrDefault(properties, "SECURENATIVE_MAX_EVENTS", options.MaxEvents)).
+		WithTimeout(c.getIntEnvOrDefault(properties, "SECURENATIVE_TIMEOUT", options.Timeout)).
+		WithAutoSend(c.getBoolEnvOrDefault(properties, "SECURENATIVE_AUTO_SEND", options.AutoSend)).
+		WithDisable(c.getBoolEnvOrDefault(properties, "SECURENATIVE_DISABLE", options.Disable)).
+		WithLogLevel(c.getStringEnvOrDefault(properties, "SECURENATIVE_LOG_LEVEL", options.LogLevel)).
+		WithLogLevel(c.getStringEnvOrDefault(properties, "SECURENATIVE_FAILOVER_STRATEGY", options.FailOverStrategy)).Build()
+}
+
+func (c *ConfigurationManager) readResourceFile(path string) map[string]string {
+	file, err := os.Open(path)
+	if err != nil {
+		// TODO: Log error
+	}
+
+	var cfg map[string]string
+	decoder := yaml.NewDecoder(file)
+	err = decoder.Decode(&cfg)
+	if err != nil {
+		// TODO: Log error
+	}
+
+	if file != nil {
+		defer file.Close()
+	}
+
+	return cfg
+}
+
+func (c *ConfigurationManager) getStringEnvOrDefault(properties map[string]string, key string, defaultKey string) string {
+	if len(os.Getenv(key)) > 0 {
+		return os.Getenv(key)
+	}
+
+	if len(properties[key]) > 0 {
+		return properties[key]
+	}
+
+	return defaultKey
+}
+
+func (c *ConfigurationManager) getIntEnvOrDefault(properties map[string]string, key string, defaultKey int32) int32 {
+	if len(os.Getenv(key)) > 0 {
+		data, err := strconv.Atoi(os.Getenv(key))
+		if err != nil {
+			return defaultKey
+		}
+		return int32(data)
+	}
+
+	if len(properties[key]) > 0 {
+		data, err := strconv.Atoi(properties[key])
+		if err != nil {
+			return defaultKey
+		}
+		return int32(data)
+	}
+
+	return defaultKey
+}
+
+func (c *ConfigurationManager) getBoolEnvOrDefault(properties map[string]string, key string, defaultKey bool) bool {
+	if len(os.Getenv(key)) > 0 {
+		data, err := strconv.ParseBool(os.Getenv(key))
+		if err != nil {
+			return defaultKey
+		}
+		return data
+	}
+
+	if len(properties[key]) > 0 {
+		data, err := strconv.ParseBool(properties[key])
+		if err != nil {
+			return defaultKey
+		}
+		return data
+	}
+
+	return defaultKey
 }

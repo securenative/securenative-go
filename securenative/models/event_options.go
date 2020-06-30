@@ -7,7 +7,7 @@ import (
 type EventOptions struct {
 	Event      string
 	UserId     string
-	UserTraits *UserTraits
+	UserTraits UserTraits
 	Context    *SecureNativeContext
 	Properties map[string]string
 	Timestamp  string
