@@ -2,7 +2,6 @@ package securenative
 
 import (
 	. "github.com/securenative/securenative-go/securenative/config"
-	. "github.com/securenative/securenative-go/securenative/errors"
 	. "github.com/securenative/securenative-go/securenative/http"
 	. "github.com/securenative/securenative-go/securenative/models"
 	"reflect"
@@ -31,11 +30,7 @@ type EventManager struct {
 	Interval     int32
 }
 
-func NewEventManager(options SecureNativeOptions, httpClient *HttpClient) (*EventManager, error) {
-	if len(options.ApiKey) == 0 {
-		return nil, &SecureNativeSDKError{Msg: "API key cannot be None, please get your API key from SecureNative console"}
-	}
-
+func NewEventManager(options SecureNativeOptions, httpClient *HttpClient) *EventManager {
 	var client *HttpClient
 	if httpClient == nil {
 		client = reflect.ValueOf(NewSecureNativeHttpClient(options)).Interface().(*HttpClient)
@@ -53,7 +48,7 @@ func NewEventManager(options SecureNativeOptions, httpClient *HttpClient) (*Even
 		Attempts:     0,
 		Coefficients: coefficients,
 		Interval:     options.Interval,
-	}, nil
+	}
 }
 
 func (e *EventManager) SendAsync(event SDKEvent, path string) {
