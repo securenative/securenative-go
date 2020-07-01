@@ -5,5 +5,5 @@ type SecureNativeConfigError struct {
 }
 
 func (e *SecureNativeConfigError) Error() string {
-	return e.Error()
+	return e.Msg
 }

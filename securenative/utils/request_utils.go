@@ -1,5 +1,27 @@
 package utils
 
-type RequestUtils struct {
-	// TODO implement me
+import . "net/http"
+
+const SecureNativeHeader = "x-securenative"
+
+type RequestUtils struct{}
+
+func NewRequestUtils() *RequestUtils {
+	return &RequestUtils{}
+}
+
+func (u *RequestUtils) GetSecureHeaderFromRequest(request *Request) string {
+	return request.Header.Get(SecureNativeHeader)
+}
+
+func (u *RequestUtils) GetClientIpFromRequest(request *Request) string {
+	ip := request.Header.Get("X-Forwarded-For")
+	if len(ip) == 0 || ip == "" {
+		return request.RemoteAddr
+	}
+	return ip
+}
+
+func (u *RequestUtils) GetRemoteIpFromRequest(request *Request) string {
+	return request.RemoteAddr
 }

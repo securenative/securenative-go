@@ -5,5 +5,5 @@ type SecureNativeSDKIllegalStateError struct {
 }
 
 func (e *SecureNativeSDKIllegalStateError) Error() string {
-	return e.Error()
+	return e.Msg
 }

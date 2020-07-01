@@ -2,12 +2,12 @@ package http
 
 import . "github.com/securenative/securenative-go/securenative/config"
 
-var AUTHORIZATION_HEADER = "Authorization"
-var VERSION_HEADER = "SN-Version"
-var USER_AGENT_HEADER = "User-Agent"
-var USER_AGENT_HEADER_VALUE = "SecureNative-python"
-var CONTENT_TYPE_HEADER = "Content-Type"
-var CONTENT_TYPE_HEADER_VALUE = "application/json"
+const AUTHORIZATION_HEADER = "Authorization"
+const VERSION_HEADER = "SN-Version"
+const USER_AGENT_HEADER = "User-Agent"
+const USER_AGENT_HEADER_VALUE = "SecureNative-python"
+const CONTENT_TYPE_HEADER = "Content-Type"
+const CONTENT_TYPE_HEADER_VALUE = "application/json"
 
 type HttpClient interface {
 	Post(path string, body string) map[string]string

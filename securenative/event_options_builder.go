@@ -7,7 +7,7 @@ import (
 	. "github.com/securenative/securenative-go/securenative/models"
 )
 
-var MaxPropertiesSize = 10
+const MaxPropertiesSize = 10
 
 type EventOptionsBuilder struct {
 	EventOptions EventOptions

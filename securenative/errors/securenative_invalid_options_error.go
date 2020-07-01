@@ -5,5 +5,5 @@ type SecureNativeInvalidOptionsError struct {
 }
 
 func (e *SecureNativeInvalidOptionsError) Error() string {
-	return e.Error()
+	return e.Msg
 }

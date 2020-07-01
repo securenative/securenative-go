@@ -5,5 +5,5 @@ type SecureNativeInvalidUriError struct {
 }
 
 func (e *SecureNativeInvalidUriError) Error() string {
-	return e.Error()
+	return e.Msg
 }

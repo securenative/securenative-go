@@ -1,8 +1,20 @@
 package utils
 
-type DateUtils struct {}
+import (
+	"time"
+)
+
+type DateUtils struct{}
+
+func NewDateUtils() *DateUtils {
+	return &DateUtils{}
+}
 
 func (u *DateUtils) ToTimestamp(timestamp string) string {
-	// TODO implement me
-	return timestamp
+	ts, err := time.Parse(time.RFC3339, timestamp)
+	if err != nil {
+		return time.Now().Format(time.RFC3339)
+	}
+
+	return ts.String()
 }

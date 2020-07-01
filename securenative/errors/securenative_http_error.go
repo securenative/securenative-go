@@ -5,5 +5,5 @@ type SecureNativeHttpError struct {
 }
 
 func (e *SecureNativeHttpError) Error() string {
-	return e.Error()
+	return e.Msg
 }

@@ -1,5 +1,12 @@
 package securenative
 
+import (
+	"fmt"
+	"log"
+	"os"
+	"strings"
+)
+
 type LoggerInterface interface {
 	Info(msg string)
 	Debug(msg string)
@@ -7,26 +14,36 @@ type LoggerInterface interface {
 	Error(msg string)
 }
 
-type Logger struct {
-	// TODO implement me
+type SecureNativeLogger struct {
+	Log      *log.Logger
+	LogLevel string
 }
 
-func NewLogger(logLevel string) *Logger {
-	panic("implement me")
+func NewSecureNativeLogger(logLevel string) *SecureNativeLogger {
+	logger := log.New(os.Stdout, fmt.Sprintf("%s: ", logLevel), log.Ldate|log.Ltime|log.Lshortfile)
+	return &SecureNativeLogger{Log: logger, LogLevel: logLevel}
 }
 
-func (l *Logger) Info(msg string) {
-
+func (l *SecureNativeLogger) Info(msg string) {
+	if strings.ToLower(l.LogLevel) == "info" {
+		l.Log.Println(msg)
+	}
 }
 
-func (l *Logger) Debug(msg string) {
-
+func (l *SecureNativeLogger) Debug(msg string) {
+	if strings.ToLower(l.LogLevel) == "debug" {
+		l.Log.Println(msg)
+	}
 }
 
-func (l *Logger) Warning(msg string) {
-
+func (l *SecureNativeLogger) Warning(msg string) {
+	if strings.ToLower(l.LogLevel) == "warning" {
+		l.Log.Println(msg)
+	}
 }
 
-func (l *Logger)  Error(msg string) {
-
+func (l *SecureNativeLogger) Error(msg string) {
+	if strings.ToLower(l.LogLevel) == "error" {
+		l.Log.Println(msg)
+	}
 }

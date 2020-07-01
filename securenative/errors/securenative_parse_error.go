@@ -5,5 +5,5 @@ type SecureNativeParseError struct {
 }
 
 func (e *SecureNativeParseError) Error() string {
-	return e.Error()
+	return e.Msg
 }

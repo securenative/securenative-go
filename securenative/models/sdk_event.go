@@ -4,7 +4,6 @@ import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/securenative/securenative-go/securenative/config"
 	. "github.com/securenative/securenative-go/securenative/context"
-	. "github.com/securenative/securenative-go/securenative/enums"
 	. "github.com/securenative/securenative-go/securenative/utils"
 )
 
@@ -13,7 +12,7 @@ type SDKEvent struct {
 	Rid        string
 	EventType  string
 	UserId     string
-	UserTraits *UserTraits
+	UserTraits UserTraits
 	Request    *RequestContext
 	Timestamp  string
 	Properties map[string]string
@@ -23,14 +22,15 @@ func NewSDKEvent(eventOptions EventOptions, secureNativeOptions SecureNativeOpti
 	event := SDKEvent{}
 	dateUtils := DateUtils{}
 	encryptionUtils := EncryptionUtils{}
+	contextBuilder := NewContextBuilder()
 
 	if eventOptions.Context == nil {
 		event.Context = eventOptions.Context
 	} else {
-		event.Context = ContextBuilder.DefaultContextBuilder().Build() // TODO check me
+		event.Context = contextBuilder.Build()
 	}
 
-	clientToken := encryptionUtils.Decrypt(event.Context.ClientToken, secureNativeOptions.ApiKey)
+	clientToken, _ := encryptionUtils.Decrypt(event.Context.ClientToken, secureNativeOptions.ApiKey)
 
 	id, err := uuid.NewV4()
 	if err != nil && id != nil {

@@ -6,7 +6,7 @@ type RequestContext struct {
 	Fp       string
 	Ip       string
 	RemoteIp string
-	Headers  map[string]string
+	Headers  map[string][]string
 	Url      string
 	Method   string
 }

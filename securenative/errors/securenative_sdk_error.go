@@ -5,5 +5,5 @@ type SecureNativeSDKError struct {
 }
 
 func (e *SecureNativeSDKError) Error() string {
-	return e.Error()
+	return e.Msg
 }

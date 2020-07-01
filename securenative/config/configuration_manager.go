@@ -6,8 +6,8 @@ import (
 	"strconv"
 )
 
-var DefaultConfigFile = "securenative.yaml"
-var CustomConfigFileEnvName = "SECURENATIVE_COMFIG_FILE"
+const DefaultConfigFile = "securenative.yaml"
+const CustomConfigFileEnvName = "SECURENATIVE_COMFIG_FILE"
 
 type ConfigurationManagerInterface interface {
 	LoadConfig() SecureNativeOptions
