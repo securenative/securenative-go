@@ -8,6 +8,8 @@ import (
 
 type SignatureUtils struct{}
 
+const SignatureHeader = "x-securenative"
+
 func NewSignatureUtils() *SignatureUtils {
 	return &SignatureUtils{}
 }

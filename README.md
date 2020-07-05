@@ -43,7 +43,7 @@ package demo
 
 import . "github.com/securenative/securenative-go/securenative"
 
-secureative :=  NewSecureNative().Init()
+secureative :=  InitSDK()
 ```
 ### Option 2: Initialize via API Key
 
@@ -52,7 +52,7 @@ package demo
 
 import . "github.com/securenative/securenative-go/securenative"
 
-secureative :=  NewSecureNative().InitWithApiKey("YOUR_API_KEY")
+secureative :=  InitSDKWithApiKey("YOUR_API_KEY")
 ```
 
 ### Option 3: Initialize via ConfigurationBuilder
@@ -66,13 +66,11 @@ import (
 
 
 configBuilder := NewConfigurationBuilder()
-secureative :=  NewSecureNative().InitWithOptions("YOUR_API_KEY")
-
-securenative := SecureNative.InitWithOptions(configBuilder
-                                        .WithApiKey("API_KEY")
-                                        .WithMaxEvents(10)
-                                        .WithLogLevel("ERROR")
-                                        .Build())
+securenative := InitSDKWithOptions(configBuilder
+                                    .WithApiKey("API_KEY")
+                                    .WithMaxEvents(10)
+                                    .WithLogLevel("ERROR")
+                                    .Build())
 ```
 
 ## Getting SecureNative instance
@@ -100,7 +98,6 @@ import (
     . "github.com/securenative/securenative-go/securenative/enums"
     . "github.com/securenative/securenative-go/securenative/models"
 )
-
 
 secureNative := GetSDKInstance()
 configBuilder := NewConfigurationBuilder()
@@ -167,7 +164,6 @@ import (
     . "github.com/securenative/securenative-go/securenative/enums"
     . "github.com/securenative/securenative-go/securenative/models"
 )
-
 
 secureNative := GetSDKInstance()
 configBuilder := NewConfigurationBuilder()
