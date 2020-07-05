@@ -44,6 +44,8 @@ package demo
 import . "github.com/securenative/securenative-go/securenative"
 
 secureative :=  InitSDK()
+
+defer secureNative.ReleaseSDK()
 ```
 ### Option 2: Initialize via API Key
 
@@ -53,6 +55,8 @@ package demo
 import . "github.com/securenative/securenative-go/securenative"
 
 secureNative :=  InitSDKWithApiKey("YOUR_API_KEY")
+
+defer secureNative.ReleaseSDK()
 ```
 
 ### Option 3: Initialize via ConfigurationBuilder
@@ -71,6 +75,8 @@ secureNative := InitSDKWithOptions(configBuilder
                                     .WithMaxEvents(10)
                                     .WithLogLevel("ERROR")
                                     .Build())
+
+defer secureNative.ReleaseSDK()
 ```
 
 ## Getting SecureNative instance
@@ -81,6 +87,8 @@ package demo
 import . "github.com/securenative/securenative-go/securenative"
 
 secureNative := GetSDKInstance()
+
+defer secureNative.ReleaseSDK()
 ```
 
 ## Tracking events
@@ -103,6 +111,8 @@ secureNative := GetSDKInstance()
 configBuilder := NewConfigurationBuilder()
 contextBuilder := NewContextBuilder()
 eventOptionsBuilder := EventOptionsBuilder(EventTypes.LOG_IN)
+
+defer secureNative.ReleaseSDK()
 
 context := contextBuilder.
         WithIp("127.0.0.1").
@@ -140,6 +150,8 @@ eventOptionsBuilder := EventOptionsBuilder(EventTypes.LOG_IN)
 
 context := contextBuilder.FromHttpRequest(request)
 
+defer secureNative.ReleaseSDK()
+
 eventOptions := eventOptionsBuilder.
 	    WithUserId("1234").
         WithUserTraits(UserTraits("Your Name", "name@gmail.com")).
@@ -169,6 +181,8 @@ secureNative := GetSDKInstance()
 configBuilder := NewConfigurationBuilder()
 contextBuilder := NewContextBuilder()
 eventOptionsBuilder := EventOptionsBuilder(EventTypes.LOG_IN)
+
+defer secureNative.ReleaseSDK()
 
 context := contextBuilder.
         WithIp("127.0.0.1").
@@ -200,6 +214,7 @@ import . "github.com/securenative/securenative-go/securenative"
 
 func WebhookEndpoint(request) bool {
     secureNative := GetSDKInstance()
+    defer secureNative.ReleaseSDK()
     
     return secureNative.VerifyRequestPayload(request)
 }

@@ -139,9 +139,9 @@ func GetInstance() *SecureNative {
 	return secureNative
 }
 
-func ReleaseSDK(secureNative *SecureNative) {
+func (s *SecureNative) ReleaseSDK() {
 	if secureNative != nil {
-		secureNative.eventManager.StopEventPersist()
+		s.eventManager.StopEventPersist()
 		secureNative = nil
 	}
 }
