@@ -39,39 +39,50 @@ To get your *API KEY*, login to your SecureNative account and go to project sett
 SecureNative can automatically load your config from *securenative.ini* file or from the file that is specified in your *SECURENATIVE_CONFIG_FILE* env variable:
 
 ```go
-from securenative.securenative import SecureNative
+package demo
 
+import . "github.com/securenative/securenative-go/securenative"
 
-secureative =  SecureNative.init()
+secureative :=  NewSecureNative().Init()
 ```
 ### Option 2: Initialize via API Key
 
 ```go
-from securenative.securenative import SecureNative
+package demo
 
+import . "github.com/securenative/securenative-go/securenative"
 
-securenative =  SecureNative.init_with_api_key("YOUR_API_KEY")
+secureative :=  NewSecureNative().InitWithApiKey("YOUR_API_KEY")
 ```
 
 ### Option 3: Initialize via ConfigurationBuilder
 ```go
-from securenative.securenative import SecureNative
+package demo
+
+import (
+    . "github.com/securenative/securenative-go/securenative"
+    . "github.com/securenative/securenative-go/securenative/config"
+)
 
 
-securenative = SecureNative.init_with_options(SecureNative.config_builder()
-                                        .with_api_key("API_KEY")
-                                        .with_max_events(10)
-                                        .with_log_level("ERROR")
-                                        .build())
+configBuilder := NewConfigurationBuilder()
+secureative :=  NewSecureNative().InitWithOptions("YOUR_API_KEY")
+
+securenative := SecureNative.InitWithOptions(configBuilder
+                                        .WithApiKey("API_KEY")
+                                        .WithMaxEvents(10)
+                                        .WithLogLevel("ERROR")
+                                        .Build())
 ```
 
 ## Getting SecureNative instance
 Once initialized, sdk will create a singleton instance which you can get: 
 ```go
-from securenative.securenative import SecureNative
+package demo
 
+import . "github.com/securenative/securenative-go/securenative"
 
-secureNative = SecureNative.get_instance()
+secureNative := GetSDKInstance()
 ```
 
 ## Tracking events
@@ -80,51 +91,66 @@ Once the SDK has been initialized, tracking requests sent through the SDK
 instance. Make sure you build event with the EventBuilder:
 
  ```go
-from securenative.securenative import SecureNative
-from securenative.event_options_builder import EventOptionsBuilder
-from securenative.enums.event_types import EventTypes
-from securenative.models.user_traits import UserTraits
+package demo
+
+import (
+    . "github.com/securenative/securenative-go/securenative"
+    . "github.com/securenative/securenative-go/securenative/config"
+    . "github.com/securenative/securenative-go/securenative/context"
+    . "github.com/securenative/securenative-go/securenative/enums"
+    . "github.com/securenative/securenative-go/securenative/models"
+)
 
 
-securenative = SecureNative.get_instance()
+secureNative := GetSDKInstance()
+configBuilder := NewConfigurationBuilder()
+contextBuilder := NewContextBuilder()
+eventOptionsBuilder := EventOptionsBuilder(EventTypes.LOG_IN)
 
-context = SecureNative.context_builder().\
-        with_ip("127.0.0.1").\
-        with_client_token("SECURED_CLIENT_TOKEN").\
-        with_headers({"user-agent", "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).\
-        build()
+context := contextBuilder.
+        WithIp("127.0.0.1").
+        WithClientToken("SECURED_CLIENT_TOKEN").
+        WithHeaders({"user-agent", "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).
+        Build()
 
-event_options = EventOptionsBuilder(EventTypes.LOG_IN).\
-with_user_id("1234").\
-        with_user_traits(UserTraits("Your Name", "name@gmail.com")).\
-        with_context(context).\
-        with_properties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).\
-        build()
+eventOptions := eventOptionsBuilder.
+	    WithUserId("1234").
+        WithUserTraits(UserTraits("Your Name", "name@gmail.com")).
+        WithContext(context).
+        WithProperties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).
+        Build()
 
-securenative.track(event_options)
+securenative.Track(eventOptions)
  ```
 
 You can also create request context from requests:
 
 ```go
-from securenative.securenative import SecureNative
-from securenative.event_options_builder import EventOptionsBuilder
-from securenative.enums.event_types import EventTypes
-from securenative.models.user_traits import UserTraits
+package demo
 
+import (
+    . "github.com/securenative/securenative-go/securenative"
+    . "github.com/securenative/securenative-go/securenative/config"
+    . "github.com/securenative/securenative-go/securenative/context"
+    . "github.com/securenative/securenative-go/securenative/enums"
+    . "github.com/securenative/securenative-go/securenative/models"
+)
 
-def track(request):
-    securenative = SecureNative.get_instance()
-    context = SecureNative.context_builder().from_http_request(request).build()
+secureNative := GetSDKInstance()
+configBuilder := NewConfigurationBuilder()
+contextBuilder := NewContextBuilder()
+eventOptionsBuilder := EventOptionsBuilder(EventTypes.LOG_IN)
 
-    event_options = EventOptionsBuilder(EventTypes.LOG_IN).\
-        with_user_id("1234").\
-        with_user_traits(UserTraits("Your Name", "name@gmail.com")).\
-        with_context(context).\
-        with_properties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).\
-        build()
-    
-    securenative.track(event_options)
+context := contextBuilder.FromHttpRequest(request)
+
+eventOptions := eventOptionsBuilder.
+	    WithUserId("1234").
+        WithUserTraits(UserTraits("Your Name", "name@gmail.com")).
+        WithContext(context).
+        WithProperties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).
+        Build()
+
+securenative.Track(eventOptions)
 ```
 
 ## Verify events
@@ -132,27 +158,39 @@ def track(request):
 **Example**
 
 ```go
-from securenative.securenative import SecureNative
-from securenative.event_options_builder import EventOptionsBuilder
-from securenative.enums.event_types import EventTypes
-from securenative.models.user_traits import UserTraits
+package demo
+
+import (
+    . "github.com/securenative/securenative-go/securenative"
+    . "github.com/securenative/securenative-go/securenative/config"
+    . "github.com/securenative/securenative-go/securenative/context"
+    . "github.com/securenative/securenative-go/securenative/enums"
+    . "github.com/securenative/securenative-go/securenative/models"
+)
 
 
-def track(request):
-    securenative = SecureNative.get_instance()
-    context = SecureNative.context_builder().from_http_request(request).build()
+secureNative := GetSDKInstance()
+configBuilder := NewConfigurationBuilder()
+contextBuilder := NewContextBuilder()
+eventOptionsBuilder := EventOptionsBuilder(EventTypes.LOG_IN)
 
-    event_options = EventOptionsBuilder(EventTypes.LOG_IN).\
-        with_user_id("1234").\
-        with_user_traits(UserTraits("Your Name", "name@gmail.com")).\
-        with_context(context).\
-        with_properties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).\
-        build()
+context := contextBuilder.
+        WithIp("127.0.0.1").
+        WithClientToken("SECURED_CLIENT_TOKEN").
+        WithHeaders({"user-agent", "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).
+        Build()
+
+eventOptions := eventOptionsBuilder.
+	    WithUserId("1234").
+        WithUserTraits(UserTraits("Your Name", "name@gmail.com")).
+        WithContext(context).
+        WithProperties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).
+        Build()
     
-    verify_result = securenative.verify(event_options)
-    verify_result.risk_level  # Low, Medium, High
-    verify_result.score  # Risk score: 0 -1 (0 - Very Low, 1 - Very High)
-    verify_result.triggers  # ["TOR", "New IP", "New City"]
+verifyResult := securenative.Verify(eventOptions)
+verifyResult.RiskLevel  // Low, Medium, High
+verifyResult.Score  // Risk score: 0 -1 (0 - Very Low, 1 - Very High)
+verifyResult.Triggers  // ["TOR", "New IP", "New City"]
 ```
 
 ## Webhook signature verification
@@ -160,13 +198,14 @@ def track(request):
 Apply our filter to verify the request is from us, for example:
 
 ```go
-from securenative.securenative import SecureNative
+package demo
 
+import . "github.com/securenative/securenative-go/securenative"
 
-def webhook_endpoint(request):
-    securenative = SecureNative.get_instance()
+func WebhookEndpoint(request) bool {
+    secureNative := GetSDKInstance()
     
-    # Checks if request is verified
-    is_verified = securenative.verify_request_payload(request)
+    return secureNative.VerifyRequestPayload(request)
+}
  ```
     

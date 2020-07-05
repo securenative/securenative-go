@@ -20,6 +20,8 @@ type SecureNative struct {
 	logger       *SdKLogger
 }
 
+var secureNative SecureNative
+
 func NewSecureNative(options SecureNativeOptions) (*SecureNative, error) {
 	utils := Utils{}
 	if utils.IsNilOrEmpty(options.ApiKey) {
@@ -40,15 +42,15 @@ func NewSecureNative(options SecureNativeOptions) (*SecureNative, error) {
 	return secureNative, nil
 }
 
-func InitSDK() (*SecureNative, error) {
+func (s *SecureNative) Init() error {
 	panic("implement me")
 }
 
-func InitSDKWithOptions(options SecureNativeOptions) (*SecureNative, error) {
+func (s *SecureNative) InitSDKWithOptions(options SecureNativeOptions) error {
 	panic("implement me")
 }
 
-func InitSDKWithApiKey(apiKey string) (*SecureNative, error) {
+func (s *SecureNative) InitSDKWithApiKey(apiKey string) error {
 	panic("implement me")
 }
 
@@ -62,4 +64,8 @@ func (s *SecureNative) Verify(event SDKEvent) {
 
 func (s *SecureNative) VerifyRequestPayload(event SDKEvent) {
 	panic("implement me")
+}
+
+func (s *SecureNative) ConfigBuilder() *ConfigurationBuilder {
+	return NewConfigurationBuilder()
 }
