@@ -52,7 +52,7 @@ package demo
 
 import . "github.com/securenative/securenative-go/securenative"
 
-secureative :=  InitSDKWithApiKey("YOUR_API_KEY")
+secureNative :=  InitSDKWithApiKey("YOUR_API_KEY")
 ```
 
 ### Option 3: Initialize via ConfigurationBuilder
@@ -66,7 +66,7 @@ import (
 
 
 configBuilder := NewConfigurationBuilder()
-securenative := InitSDKWithOptions(configBuilder
+secureNative := InitSDKWithOptions(configBuilder
                                     .WithApiKey("API_KEY")
                                     .WithMaxEvents(10)
                                     .WithLogLevel("ERROR")
@@ -117,7 +117,7 @@ eventOptions := eventOptionsBuilder.
         WithProperties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).
         Build()
 
-securenative.Track(eventOptions)
+secureNative.Track(eventOptions)
  ```
 
 You can also create request context from requests:
@@ -147,7 +147,7 @@ eventOptions := eventOptionsBuilder.
         WithProperties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).
         Build()
 
-securenative.Track(eventOptions)
+secureNative.Track(eventOptions)
 ```
 
 ## Verify events
@@ -183,7 +183,7 @@ eventOptions := eventOptionsBuilder.
         WithProperties({"prop1": "CUSTOM_PARAM_VALUE", "prop2": True, "prop3": 3}).
         Build()
     
-verifyResult := securenative.Verify(eventOptions)
+verifyResult := secureNative.Verify(eventOptions)
 verifyResult.RiskLevel  // Low, Medium, High
 verifyResult.Score  // Risk score: 0 -1 (0 - Very Low, 1 - Very High)
 verifyResult.Triggers  // ["TOR", "New IP", "New City"]
