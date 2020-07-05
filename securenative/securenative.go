@@ -8,6 +8,7 @@ import (
 	. "github.com/securenative/securenative-go/securenative/utils"
 	"io/ioutil"
 	. "net/http"
+	"runtime"
 )
 
 type SDKInterface interface {
@@ -25,7 +26,7 @@ type SecureNative struct {
 
 var secureNative *SecureNative
 
-func NewSecureNative(options SecureNativeOptions) (*SecureNative, error) {
+func newSecureNative(options SecureNativeOptions) (*SecureNative, error) {
 	utils := Utils{}
 	if utils.IsNilOrEmpty(options.ApiKey) {
 		return nil, &SecureNativeSDKError{Msg: "You must pass your SecureNative api key"}
@@ -42,6 +43,8 @@ func NewSecureNative(options SecureNativeOptions) (*SecureNative, error) {
 	secureNative.apiManager = NewApiManager(secureNative.eventManager, options)
 	secureNative.logger = InitLogger(options.LogLevel)
 
+	runtime.SetFinalizer(secureNative, exit)
+
 	return secureNative, nil
 }
 
@@ -52,7 +55,7 @@ func InitSDK() (*SecureNative, error) {
 
 	configManager := NewConfigurationManager()
 	options := configManager.LoadConfig()
-	sn, err := NewSecureNative(options)
+	sn, err := newSecureNative(options)
 
 	if err != nil {
 		return nil, err
@@ -67,7 +70,7 @@ func InitSDKWithOptions(options SecureNativeOptions) (*SecureNative, error) {
 		return secureNative, &SecureNativeSDKError{Msg: "This SDK was already initialized"}
 	}
 
-	sn, err := NewSecureNative(options)
+	sn, err := newSecureNative(options)
 
 	if err != nil {
 		return nil, err
@@ -89,7 +92,7 @@ func InitSDKWithApiKey(apiKey string) (*SecureNative, error) {
 
 	builder := NewConfigurationBuilder()
 	options := builder.WithApiKey(apiKey).Build()
-	sn, err := NewSecureNative(options)
+	sn, err := newSecureNative(options)
 
 	if err != nil {
 		return nil, err
@@ -134,4 +137,11 @@ func (s *SecureNative) SecureNativeOptions() SecureNativeOptions {
 
 func GetInstance() *SecureNative {
 	return secureNative
+}
+
+func ReleaseSDK(secureNative *SecureNative) {
+	if secureNative != nil {
+		secureNative.eventManager.StopEventPersist()
+		secureNative = nil
+	}
 }
