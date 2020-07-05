@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	. "github.com/securenative/securenative-go/securenative"
 	"gopkg.in/yaml.v2"
 	"os"
 	"strconv"
@@ -43,16 +45,18 @@ func (c *ConfigurationManager) LoadConfig() SecureNativeOptions {
 }
 
 func (c *ConfigurationManager) readResourceFile(path string) map[string]string {
+	logger := GetLogger()
+
 	file, err := os.Open(path)
 	if err != nil {
-		// TODO: Log error
+		logger.Error(fmt.Sprintf("Could not read file %s; %s", path, err))
 	}
 
 	var cfg map[string]string
 	decoder := yaml.NewDecoder(file)
 	err = decoder.Decode(&cfg)
 	if err != nil {
-		// TODO: Log error
+		logger.Error(fmt.Sprintf("Could decode file %s; %s", path, err))
 	}
 
 	if file != nil {

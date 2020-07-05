@@ -1,6 +1,7 @@
 package securenative
 
 import (
+	"fmt"
 	. "github.com/securenative/securenative-go/securenative/config"
 	. "github.com/securenative/securenative-go/securenative/enums"
 	. "github.com/securenative/securenative-go/securenative/models"
@@ -26,18 +27,22 @@ func NewApiManager(eventManager *EventManager, options SecureNativeOptions) *Api
 }
 
 func (m *ApiManager) Track(eventOptions EventOptions) {
-	// TODO: Debug LOG - "Track event call"
+	logger := GetLogger()
+	logger.Debug("Track event call")
+
 	event := NewSDKEvent(eventOptions, m.Options)
 	m.EventManager.SendAsync(event, ApiRoute.Track)
 }
 
 func (m *ApiManager) Verify(eventOptions EventOptions) VerifyResult {
-	// TODO: Debug LOG - "Verify event call"
+	logger := GetLogger()
+	logger.Debug("Verify event call")
+
 	event := NewSDKEvent(eventOptions, m.Options)
 
 	res, err := m.EventManager.SendSync(event, ApiRoute.Verify, false)
 	if err != nil {
-		// TODO: Debug LOG - "Failed to call verify; {}"
+		logger.Debug(fmt.Sprintf("Failed to call verify; %s", err))
 		if m.Options.FailOverStrategy == FailOverStrategy.FailOpen {
 			return VerifyResult{RiskLevel: RiskLevel.Low, Score: 0, Triggers: nil}
 		}
