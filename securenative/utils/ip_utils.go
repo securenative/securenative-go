@@ -36,7 +36,10 @@ func (u *IpUtils) IsValidPublicIp(ip string) bool {
 		private = private24BitBlock.Contains(parsedIp) || private20BitBlock.Contains(parsedIp) || private16BitBlock.Contains(parsedIp)
 	}
 
-	return private && parsedIp.IsLoopback() && parsedIp.IsGlobalUnicast() && parsedIp.IsMulticast() && parsedIp.IsUnspecified()
+	if private || parsedIp.IsLoopback() || parsedIp.IsMulticast() || parsedIp.IsUnspecified() {
+		return false
+	}
+	return true
 }
 
 func (u *IpUtils) IsLoopBack(ip string) bool {

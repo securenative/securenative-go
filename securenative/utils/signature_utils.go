@@ -2,7 +2,7 @@ package utils
 
 import (
 	"crypto/hmac"
-	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/hex"
 )
 
@@ -19,7 +19,7 @@ func (u *SignatureUtils) IsValidSignature(apiKey string, payload string, headerS
 	key := []byte(apiKey)
 	body := []byte(payload)
 
-	h := hmac.New(sha256.New, key)
+	h := hmac.New(sha512.New, key)
 	h.Write(body)
 	signature := hex.EncodeToString(h.Sum(nil))
 
