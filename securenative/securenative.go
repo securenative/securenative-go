@@ -1,35 +1,35 @@
 package securenative
 
 import (
-	. "github.com/securenative/securenative-go/securenative/config"
-	. "github.com/securenative/securenative-go/securenative/context"
-	. "github.com/securenative/securenative-go/securenative/errors"
+	"github.com/securenative/securenative-go/securenative/config"
+	"github.com/securenative/securenative-go/securenative/context"
+	"github.com/securenative/securenative-go/securenative/errors"
 	"github.com/securenative/securenative-go/securenative/events"
-	. "github.com/securenative/securenative-go/securenative/models"
-	. "github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/securenative/models"
+	"github.com/securenative/securenative-go/securenative/utils"
 	"io/ioutil"
-	. "net/http"
+	"net/http"
 )
 
 type SDKInterface interface {
-	Track(event SDKEvent)
-	Verify(event SDKEvent)
-	VerifyRequestPayload(event SDKEvent)
+	Track(event models.SDKEvent)
+	Verify(event models.SDKEvent)
+	VerifyRequestPayload(event models.SDKEvent)
 }
 
 type SecureNative struct {
-	options      SecureNativeOptions
+	options      config.SecureNativeOptions
 	eventManager *events.EventManager
 	apiManager   *events.ApiManager
-	logger       *SdKLogger
+	logger       *utils.SdKLogger
 }
 
 var secureNative *SecureNative
 
-func newSecureNative(options SecureNativeOptions) (*SecureNative, error) {
-	utils := Utils{}
-	if utils.IsNilOrEmpty(options.ApiKey) {
-		return nil, &SecureNativeSDKError{Msg: "You must pass your SecureNative api key"}
+func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) {
+	u := utils.Utils{}
+	if u.IsNilOrEmpty(options.ApiKey) {
+		return nil, &errors.SecureNativeSDKError{Msg: "You must pass your SecureNative api key"}
 	}
 
 	secureNative := &SecureNative{}
@@ -41,17 +41,17 @@ func newSecureNative(options SecureNativeOptions) (*SecureNative, error) {
 	}
 
 	secureNative.apiManager = events.NewApiManager(secureNative.eventManager, options)
-	secureNative.logger = InitLogger(options.LogLevel)
+	secureNative.logger = utils.InitLogger(options.LogLevel)
 
 	return secureNative, nil
 }
 
 func InitSDK() (*SecureNative, error) {
 	if secureNative != nil {
-		return secureNative, &SecureNativeSDKError{Msg: "This SDK was already initialized"}
+		return secureNative, &errors.SecureNativeSDKError{Msg: "This SDK was already initialized"}
 	}
 
-	configManager := NewConfigurationManager()
+	configManager := config.NewConfigurationManager()
 	options := configManager.LoadConfig()
 	sn, err := newSecureNative(options)
 
@@ -63,9 +63,9 @@ func InitSDK() (*SecureNative, error) {
 	return sn, nil
 }
 
-func InitSDKWithOptions(options SecureNativeOptions) (*SecureNative, error) {
+func InitSDKWithOptions(options config.SecureNativeOptions) (*SecureNative, error) {
 	if secureNative != nil {
-		return secureNative, &SecureNativeSDKError{Msg: "This SDK was already initialized"}
+		return secureNative, &errors.SecureNativeSDKError{Msg: "This SDK was already initialized"}
 	}
 
 	sn, err := newSecureNative(options)
@@ -80,15 +80,15 @@ func InitSDKWithOptions(options SecureNativeOptions) (*SecureNative, error) {
 
 func InitSDKWithApiKey(apiKey string) (*SecureNative, error) {
 	if secureNative != nil {
-		return secureNative, &SecureNativeSDKError{Msg: "This SDK was already initialized"}
+		return secureNative, &errors.SecureNativeSDKError{Msg: "This SDK was already initialized"}
 	}
 
-	utils := Utils{}
-	if utils.IsNilOrEmpty(apiKey) {
-		return nil,  &SecureNativeConfigError{Msg: "You must pass your SecureNative api key"}
+	u := utils.Utils{}
+	if u.IsNilOrEmpty(apiKey) {
+		return nil,  &errors.SecureNativeConfigError{Msg: "You must pass your SecureNative api key"}
 	}
 
-	configBuilder := NewConfigurationBuilder()
+	configBuilder := config.NewConfigurationBuilder()
 	options := configBuilder.WithApiKey(apiKey).Build()
 	sn, err := newSecureNative(options)
 
@@ -100,18 +100,18 @@ func InitSDKWithApiKey(apiKey string) (*SecureNative, error) {
 	return sn, nil
 }
 
-func (s *SecureNative) Track(event EventOptions) {
+func (s *SecureNative) Track(event models.EventOptions) {
 	s.apiManager.Track(event)
 }
 
-func (s *SecureNative) Verify(event EventOptions) *VerifyResult {
+func (s *SecureNative) Verify(event models.EventOptions) *models.VerifyResult {
 	return s.apiManager.Verify(event)
 }
 
-func (s *SecureNative) VerifyRequestPayload(request *Request) bool {
-	signatureUtils := NewSignatureUtils()
+func (s *SecureNative) VerifyRequestPayload(request *http.Request) bool {
+	signatureUtils := utils.NewSignatureUtils()
 
-	requestSignature := request.Header.Get(SignatureHeader)
+	requestSignature := request.Header.Get(utils.SignatureHeader)
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		s.logger.Debug("Could not read request body")
@@ -121,19 +121,19 @@ func (s *SecureNative) VerifyRequestPayload(request *Request) bool {
 	return signatureUtils.IsValidSignature(s.options.ApiKey, string(body), requestSignature)
 }
 
-func GetConfigBuilder() *ConfigurationBuilder {
-	return NewConfigurationBuilder()
+func GetConfigBuilder() *config.ConfigurationBuilder {
+	return config.NewConfigurationBuilder()
 }
 
 func (s *SecureNative) GetEventOptionsBuilder(eventType string) *events.EventOptionsBuilder {
 	return events.NewEventOptionsBuilder(eventType)
 }
 
-func GetContextBuilder() *SecureNativeContextBuilder {
-	return NewSecureNativeContextBuilder()
+func GetContextBuilder() *context.SecureNativeContextBuilder {
+	return context.NewSecureNativeContextBuilder()
 }
 
-func (s *SecureNative) GetSecureNativeOptions() SecureNativeOptions {
+func (s *SecureNative) GetSecureNativeOptions() config.SecureNativeOptions {
 	return s.options
 }
 

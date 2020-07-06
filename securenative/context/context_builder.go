@@ -1,14 +1,14 @@
 package context
 
 import (
-	. "github.com/securenative/securenative-go/securenative/utils"
-	. "net/http"
+	"github.com/securenative/securenative-go/securenative/utils"
+	"net/http"
 )
 
 const SecureNativeCookie = "_sn"
 
 type ContextBuilderInterface interface {
-	FromHttpRequest(request *Request) SecureNativeContext
+	FromHttpRequest(request *http.Request) SecureNativeContext
 }
 
 type SecureNativeContextBuilder struct {
@@ -27,9 +27,9 @@ func NewSecureNativeContextBuilder() *SecureNativeContextBuilder {
 	}}
 }
 
-func (c *SecureNativeContextBuilder) FromHttpRequest(request *Request) *SecureNativeContext {
-	utils := Utils{}
-	requestUtils := RequestUtils{}
+func (c *SecureNativeContextBuilder) FromHttpRequest(request *http.Request) *SecureNativeContext {
+	u := utils.Utils{}
+	requestUtils := utils.RequestUtils{}
 	cookie, err := request.Cookie(SecureNativeCookie)
 	clientToken := ""
 	if err == nil {
@@ -37,7 +37,7 @@ func (c *SecureNativeContextBuilder) FromHttpRequest(request *Request) *SecureNa
 	}
 
 	headers := parseHeaders(request)
-	if utils.IsNilOrEmpty(clientToken) {
+	if u.IsNilOrEmpty(clientToken) {
 		clientToken = requestUtils.GetSecureHeaderFromRequest(request)
 	}
 
@@ -89,7 +89,7 @@ func (c *SecureNativeContextBuilder) Build() *SecureNativeContext {
 	return c.Context
 }
 
-func parseHeaders(request *Request) map[string][]string {
+func parseHeaders(request *http.Request) map[string][]string {
 	headers := map[string][]string{}
 	for name, values := range request.Header {
 		headers[name] = values

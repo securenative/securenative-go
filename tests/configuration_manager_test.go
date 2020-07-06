@@ -1,9 +1,17 @@
 package tests
 
-import "testing"
+import (
+	"github.com/securenative/securenative-go/securenative/config"
+	"testing"
+)
 
 func TestParseConfigFileCorrectly(t *testing.T) {
-	// TODO implement me
+	configManager := config.NewConfigurationManager()
+	options := configManager.LoadConfig()
+
+	if options.ApiKey != "Some Random Api Key" {
+		t.Error("Test Failed: configuration file was not read correctly")
+	}
 }
 
 func TestIgnoreUnknownConfigInPropertiesFile(t *testing.T) {

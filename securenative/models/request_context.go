@@ -10,4 +10,3 @@ type RequestContext struct {
 	Url      string
 	Method   string
 }
-

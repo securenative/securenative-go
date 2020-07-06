@@ -2,22 +2,22 @@ package events
 
 import (
 	"fmt"
-	. "github.com/securenative/securenative-go/securenative/context"
-	. "github.com/securenative/securenative-go/securenative/errors"
-	. "github.com/securenative/securenative-go/securenative/models"
+	"github.com/securenative/securenative-go/securenative/context"
+	"github.com/securenative/securenative-go/securenative/errors"
+	"github.com/securenative/securenative-go/securenative/models"
 )
 
 const MaxPropertiesSize = 10
 
 type EventOptionsBuilder struct {
-	EventOptions EventOptions
+	EventOptions models.EventOptions
 }
 
 func NewEventOptionsBuilder(eventType string) *EventOptionsBuilder {
-	options := EventOptions{
+	options := models.EventOptions{
 		Event:      eventType,
 		UserId:     "",
-		UserTraits: UserTraits{},
+		UserTraits: models.UserTraits{},
 		Context:    nil,
 		Properties: nil,
 		Timestamp:  "",
@@ -31,12 +31,12 @@ func (e *EventOptionsBuilder) WithUserId(userId string) *EventOptionsBuilder {
 	return e
 }
 
-func (e *EventOptionsBuilder) WithUserTraits(userTraits UserTraits) *EventOptionsBuilder {
+func (e *EventOptionsBuilder) WithUserTraits(userTraits models.UserTraits) *EventOptionsBuilder {
 	e.EventOptions.UserTraits = userTraits
 	return e
 }
 
-func (e *EventOptionsBuilder) WithContext(context *SecureNativeContext) *EventOptionsBuilder {
+func (e *EventOptionsBuilder) WithContext(context *context.SecureNativeContext) *EventOptionsBuilder {
 	e.EventOptions.Context = context
 	return e
 }
@@ -51,9 +51,9 @@ func (e *EventOptionsBuilder) WithTimestamp(timestamp string) *EventOptionsBuild
 	return e
 }
 
-func (e *EventOptionsBuilder) Build() (EventOptions, error) {
+func (e *EventOptionsBuilder) Build() (models.EventOptions, error) {
 	if len(e.EventOptions.Properties) > 0 && len(e.EventOptions.Properties) > MaxPropertiesSize {
-		return EventOptions{}, &SecureNativeInvalidOptionsError{Msg: fmt.Sprintf("You can have only up to %d custom properties", MaxPropertiesSize)}
+		return models.EventOptions{}, &errors.SecureNativeInvalidOptionsError{Msg: fmt.Sprintf("You can have only up to %d custom properties", MaxPropertiesSize)}
 	}
 
 	return e.EventOptions, nil

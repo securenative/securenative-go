@@ -2,13 +2,13 @@ package config
 
 import (
 	"fmt"
-	. "github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/securenative/utils"
 	"gopkg.in/yaml.v2"
 	"os"
 	"strconv"
 )
 
-const DefaultConfigFile = "securenative.yaml"
+const DefaultConfigFile = "securenative.yml"
 const CustomConfigFileEnvName = "SECURENATIVE_COMFIG_FILE"
 
 type ConfigurationManagerInterface interface {
@@ -45,7 +45,7 @@ func (c *ConfigurationManager) LoadConfig() SecureNativeOptions {
 }
 
 func (c *ConfigurationManager) readResourceFile(path string) map[string]string {
-	logger := GetLogger()
+	logger := utils.GetLogger()
 
 	file, err := os.Open(path)
 	if err != nil {

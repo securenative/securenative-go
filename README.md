@@ -36,7 +36,7 @@ go get github.com/securenative/securenative-go
 To get your *API KEY*, login to your SecureNative account and go to project settings page:
 
 ### Option 1: Initialize via Config file
-SecureNative can automatically load your config from *securenative.ini* file or from the file that is specified in your *SECURENATIVE_CONFIG_FILE* env variable:
+SecureNative can automatically load your config from *securenative.yml* file or from the file that is specified in your *SECURENATIVE_CONFIG_FILE* env variable:
 
 ```go
 package main
@@ -46,7 +46,7 @@ import "github.com/securenative/securenative-go/securenative"
 func main() {
     sn, err :=  securenative.InitSDK()
     if err != nil {
-                     // Do some error handling
+         // Do some error handling
     }
 
     defer sn.ReleaseSDK()
@@ -62,7 +62,7 @@ import "github.com/securenative/securenative-go/securenative"
 func main() {
     sn, err :=  securenative.InitSDKWithApiKey("YOUR_API_KEY")
     if err != nil {
-                 // Do some error handling
+         // Do some error handling
     }
 
     defer sn.ReleaseSDK()
@@ -82,7 +82,7 @@ func main() {
     configBuilder := securenative.GetConfigBuilder()
     sn, err := securenative.InitSDKWithOptions(configBuilder.WithApiKey("API_KEY").WithMaxEvents(10).WithLogLevel("ERROR").Build())
     if err != nil {
-             // Do some error handling
+         // Do some error handling
     }
 
     defer sn.ReleaseSDK()
@@ -129,7 +129,7 @@ func main() {
     context := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
     eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(context).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
     if err != nil {
-            // Do some error handling
+        // Do some error handling
     }
     
     sn.Track(eventOptions)
@@ -160,7 +160,7 @@ func main() {
     
     eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(context).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
     if err != nil {
-            // Do some error handling
+        // Do some error handling
     }
     
     sn.Track(eventOptions)

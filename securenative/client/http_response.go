@@ -1,6 +1,6 @@
-package http
+package client
 
-type HttpResponse struct {
+type Response struct {
 	Ok         bool
 	StatusCode string
 	Body       string

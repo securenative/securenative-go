@@ -1,12 +1,12 @@
 package tests
 
 import (
-	. "github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/securenative/utils"
 	"testing"
 )
 
 func TestToTimestamp(t *testing.T) {
-	dateUtils := NewDateUtils()
+	dateUtils := utils.NewDateUtils()
 	Iso8601Date := "2020-05-20T15:07:13Z"
 	result := dateUtils.ToTimestamp(Iso8601Date)
 

@@ -1,6 +1,6 @@
 package config
 
-import . "github.com/securenative/securenative-go/securenative/enums"
+import "github.com/securenative/securenative-go/securenative/enums"
 
 type ConfigurationBuilder struct {
 	Options SecureNativeOptions
@@ -16,7 +16,7 @@ func NewConfigurationBuilder() *ConfigurationBuilder {
 		AutoSend:         true,
 		Disable:          false,
 		LogLevel:         "CRITICAL",
-		FailOverStrategy: FailOverStrategy.FailOpen,
+		FailOverStrategy: enums.FailOverStrategy.FailOpen,
 	}
 
 	return &ConfigurationBuilder{Options: options}
@@ -32,7 +32,7 @@ func (c *ConfigurationBuilder) DefaultSecureNativeOptions() SecureNativeOptions 
 		AutoSend:         true,
 		Disable:          false,
 		LogLevel:         "CRITICAL",
-		FailOverStrategy: FailOverStrategy.FailOpen,
+		FailOverStrategy: enums.FailOverStrategy.FailOpen,
 	}
 }
 

@@ -1,7 +1,7 @@
 package tests
 
 import (
-	. "github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/securenative/utils"
 	"testing"
 )
 
@@ -10,7 +10,7 @@ func TestVerifyRequestPayload(t *testing.T) {
 	payload := "{\"id\":\"4a9157ffbd18cfbd73a57298\",\"type\":\"security-action\",\"flow\":{\"id\":\"62298c73a9bb433fbd1f75984a9157fd\",\"name\":\"Block user that violates geo velocity\"},\"userId\":\"73a9bb433fbd1f75984a9157\",\"userTraits\":{\"name\":\"John Doe\",\"email\":\"john.doe@gmail.com\"},\"request\":{\"ip\":\"10.0.0.0\",\"fp\":\"9bb433fb984a9157d1f7598\"},\"action\":\"block\",\"properties\":{\"type\":\"customer\"},\"timestamp\":\"2020-02-23T22:28:55.387Z\"}"
 	secretKey := "B00C42DAD33EAC6F6572DA756EA4915349C0A4F6"
 
-	signatureUtils := NewSignatureUtils()
+	signatureUtils := utils.NewSignatureUtils()
 	result := signatureUtils.IsValidSignature(secretKey, payload, signature)
 
 	if result != true {
@@ -19,7 +19,7 @@ func TestVerifyRequestPayload(t *testing.T) {
 }
 
 func TestVerifyRequestEmptySignature(t *testing.T) {
-	signatureUtils := NewSignatureUtils()
+	signatureUtils := utils.NewSignatureUtils()
 	signature := "B00C42DAD33EAC6F6572DA756EA4915349C0A4F6"
 	result := signatureUtils.IsValidSignature("", "", signature)
 

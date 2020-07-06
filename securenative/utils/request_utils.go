@@ -1,6 +1,6 @@
 package utils
 
-import . "net/http"
+import "net/http"
 
 const SecureNativeHeader = "x-securenative"
 
@@ -10,11 +10,11 @@ func NewRequestUtils() *RequestUtils {
 	return &RequestUtils{}
 }
 
-func (u *RequestUtils) GetSecureHeaderFromRequest(request *Request) string {
+func (u *RequestUtils) GetSecureHeaderFromRequest(request *http.Request) string {
 	return request.Header.Get(SecureNativeHeader)
 }
 
-func (u *RequestUtils) GetClientIpFromRequest(request *Request) string {
+func (u *RequestUtils) GetClientIpFromRequest(request *http.Request) string {
 	ip := request.Header.Get("X-Forwarded-For")
 	if len(ip) == 0 || ip == "" {
 		return request.RemoteAddr
@@ -22,6 +22,6 @@ func (u *RequestUtils) GetClientIpFromRequest(request *Request) string {
 	return ip
 }
 
-func (u *RequestUtils) GetRemoteIpFromRequest(request *Request) string {
+func (u *RequestUtils) GetRemoteIpFromRequest(request *http.Request) string {
 	return request.RemoteAddr
 }

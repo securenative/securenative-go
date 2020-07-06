@@ -2,13 +2,13 @@ package models
 
 import (
 	"github.com/nu7hatch/gouuid"
-	. "github.com/securenative/securenative-go/securenative/config"
-	. "github.com/securenative/securenative-go/securenative/context"
-	. "github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/securenative/config"
+	"github.com/securenative/securenative-go/securenative/context"
+	"github.com/securenative/securenative-go/securenative/utils"
 )
 
 type SDKEvent struct {
-	Context    *SecureNativeContext
+	Context    *context.SecureNativeContext
 	Rid        string
 	EventType  string
 	UserId     string
@@ -18,11 +18,11 @@ type SDKEvent struct {
 	Properties map[string]string
 }
 
-func NewSDKEvent(eventOptions EventOptions, secureNativeOptions SecureNativeOptions) SDKEvent {
+func NewSDKEvent(eventOptions EventOptions, secureNativeOptions config.SecureNativeOptions) SDKEvent {
 	event := SDKEvent{}
-	dateUtils := DateUtils{}
-	encryptionUtils := EncryptionUtils{}
-	contextBuilder := NewSecureNativeContextBuilder()
+	dateUtils := utils.DateUtils{}
+	encryptionUtils := utils.EncryptionUtils{}
+	contextBuilder := context.NewSecureNativeContextBuilder()
 
 	if eventOptions.Context == nil {
 		event.Context = eventOptions.Context

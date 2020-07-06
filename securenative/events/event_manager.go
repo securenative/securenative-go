@@ -3,13 +3,13 @@ package events
 import (
 	"encoding/json"
 	"fmt"
-	. "github.com/securenative/securenative-go/securenative/config"
-	. "github.com/securenative/securenative-go/securenative/errors"
-	. "github.com/securenative/securenative-go/securenative/http"
-	. "github.com/securenative/securenative-go/securenative/models"
+	"github.com/securenative/securenative-go/securenative/config"
+	"github.com/securenative/securenative-go/securenative/errors"
+	client "github.com/securenative/securenative-go/securenative/client"
+	"github.com/securenative/securenative-go/securenative/models"
 	"github.com/securenative/securenative-go/securenative/utils"
 	"io/ioutil"
-	. "net/http"
+	"net/http"
 	"time"
 )
 
@@ -22,16 +22,16 @@ type QueueItem struct {
 }
 
 type EventManagerInterface interface {
-	SendAsync(event SDKEvent, path string)
-	SendSync(event SDKEvent, path string, retry bool) (map[string]string, error)
+	SendAsync(event models.SDKEvent, path string)
+	SendSync(event models.SDKEvent, path string, retry bool) (map[string]string, error)
 	StartEventPersist()
 	StopEventPersist()
 }
 
 type EventManager struct {
-	HttpClient   *SecureNativeHttpClient
+	HttpClient   *client.SecureNativeHttpClient
 	Queue        []QueueItem
-	Options      SecureNativeOptions
+	Options      config.SecureNativeOptions
 	SendEnabled  bool
 	Attempt      int16
 	Coefficients []int32
@@ -39,19 +39,19 @@ type EventManager struct {
 	Channel      chan struct{}
 }
 
-func NewEventManager(options SecureNativeOptions, httpClient *SecureNativeHttpClient) *EventManager {
-	var client *SecureNativeHttpClient
+func NewEventManager(options config.SecureNativeOptions, httpClient *client.SecureNativeHttpClient) *EventManager {
+	var c *client.SecureNativeHttpClient
 	if httpClient == nil {
-		client = NewSecureNativeHttpClient(options)
+		c = client.NewSecureNativeHttpClient(options)
 	} else {
-		client = httpClient
+		c = httpClient
 	}
 
 	coefficients := []int32{1, 1, 2, 3, 5, 8, 13}
 	channel := make(chan struct{})
 
 	return &EventManager{
-		HttpClient:   client,
+		HttpClient:   c,
 		Queue:        []QueueItem{},
 		Options:      options,
 		SendEnabled:  false,
@@ -62,7 +62,7 @@ func NewEventManager(options SecureNativeOptions, httpClient *SecureNativeHttpCl
 	}
 }
 
-func (e *EventManager) SendAsync(event SDKEvent, path string) {
+func (e *EventManager) SendAsync(event models.SDKEvent, path string) {
 	if e.Options.Disable {
 		logger.Warning("SDK is disabled. no operation will be performed")
 		return
@@ -82,10 +82,10 @@ func (e *EventManager) SendAsync(event SDKEvent, path string) {
 	e.Queue = append(e.Queue, item)
 }
 
-func (e *EventManager) SendSync(event SDKEvent, path string, retry bool) (map[string]interface{}, error) {
+func (e *EventManager) SendSync(event models.SDKEvent, path string, retry bool) (map[string]interface{}, error) {
 	if e.Options.Disable {
 		logger.Warning("SDK is disabled. no operation will be performed")
-		return nil, &SecureNativeSDKIllegalStateError{Msg: "SDK is disabled. no operation will be performed"}
+		return nil, &errors.SecureNativeSDKIllegalStateError{Msg: "SDK is disabled. no operation will be performed"}
 	}
 
 	body, err := json.Marshal(e.serialize(event))
@@ -146,7 +146,7 @@ func (e *EventManager) run() (map[string]interface{}, error) {
 				if res.StatusCode == 401 {
 					item.Retry = false
 				} else if res.StatusCode != 200 {
-					return nil, &SecureNativeHttpError{Msg: fmt.Sprintf("Failed to post event; status code: %d", res.StatusCode)}
+					return nil, &errors.SecureNativeHttpError{Msg: fmt.Sprintf("Failed to post event; status code: %d", res.StatusCode)}
 				}
 
 				logger.Debug(fmt.Sprintf("Event successfully sent; %s", item.Body))
@@ -173,7 +173,7 @@ func (e *EventManager) run() (map[string]interface{}, error) {
 	return nil, nil
 }
 
-func (e *EventManager) serialize(event SDKEvent) map[string]interface{} {
+func (e *EventManager) serialize(event models.SDKEvent) map[string]interface{} {
 	serialized := map[string]interface{}{
 		"rid":       event.Rid,
 		"eventType": event.EventType,
@@ -200,7 +200,7 @@ func (e *EventManager) serialize(event SDKEvent) map[string]interface{} {
 	return serialized
 }
 
-func readBody(response *Response) (map[string]interface{}, error) {
+func readBody(response *http.Response) (map[string]interface{}, error) {
 	var resBody map[string]interface{}
 
 	b, err := ioutil.ReadAll(response.Body)
