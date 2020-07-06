@@ -22,7 +22,7 @@ func NewSDKEvent(eventOptions EventOptions, secureNativeOptions SecureNativeOpti
 	event := SDKEvent{}
 	dateUtils := DateUtils{}
 	encryptionUtils := EncryptionUtils{}
-	contextBuilder := NewContextBuilder()
+	contextBuilder := NewSecureNativeContextBuilder()
 
 	if eventOptions.Context == nil {
 		event.Context = eventOptions.Context

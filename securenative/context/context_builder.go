@@ -11,12 +11,12 @@ type ContextBuilderInterface interface {
 	FromHttpRequest(request *Request) SecureNativeContext
 }
 
-type ContextBuilder struct {
+type SecureNativeContextBuilder struct {
 	Context *SecureNativeContext
 }
 
-func NewContextBuilder() *ContextBuilder {
-	return &ContextBuilder{Context: &SecureNativeContext{
+func NewSecureNativeContextBuilder() *SecureNativeContextBuilder {
+	return &SecureNativeContextBuilder{Context: &SecureNativeContext{
 		ClientToken: "",
 		Ip:          "",
 		RemoteIp:    "",
@@ -27,7 +27,7 @@ func NewContextBuilder() *ContextBuilder {
 	}}
 }
 
-func (c *ContextBuilder) FromHttpRequest(request *Request) *SecureNativeContext {
+func (c *SecureNativeContextBuilder) FromHttpRequest(request *Request) *SecureNativeContext {
 	utils := Utils{}
 	requestUtils := RequestUtils{}
 	cookie, err := request.Cookie(SecureNativeCookie)
@@ -50,42 +50,42 @@ func (c *ContextBuilder) FromHttpRequest(request *Request) *SecureNativeContext 
 		WithBody("").Build()
 }
 
-func (c *ContextBuilder) WithClientToken(clientToken string) *ContextBuilder {
+func (c *SecureNativeContextBuilder) WithClientToken(clientToken string) *SecureNativeContextBuilder {
 	c.Context.ClientToken = clientToken
 	return c
 }
 
-func (c *ContextBuilder) WithIp(ip string) *ContextBuilder {
+func (c *SecureNativeContextBuilder) WithIp(ip string) *SecureNativeContextBuilder {
 	c.Context.Ip = ip
 	return c
 }
 
-func (c *ContextBuilder) WithRemoteIp(remoteIp string) *ContextBuilder {
+func (c *SecureNativeContextBuilder) WithRemoteIp(remoteIp string) *SecureNativeContextBuilder {
 	c.Context.RemoteIp = remoteIp
 	return c
 }
 
-func (c *ContextBuilder) WithHeaders(headers map[string][]string) *ContextBuilder {
+func (c *SecureNativeContextBuilder) WithHeaders(headers map[string][]string) *SecureNativeContextBuilder {
 	c.Context.Headers = headers
 	return c
 }
 
-func (c *ContextBuilder) WithUrl(url string) *ContextBuilder {
+func (c *SecureNativeContextBuilder) WithUrl(url string) *SecureNativeContextBuilder {
 	c.Context.Url = url
 	return c
 }
 
-func (c *ContextBuilder) WithMethod(method string) *ContextBuilder {
+func (c *SecureNativeContextBuilder) WithMethod(method string) *SecureNativeContextBuilder {
 	c.Context.Method = method
 	return c
 }
 
-func (c *ContextBuilder) WithBody(body string) *ContextBuilder {
+func (c *SecureNativeContextBuilder) WithBody(body string) *SecureNativeContextBuilder {
 	c.Context.Body = body
 	return c
 }
 
-func (c *ContextBuilder) Build() *SecureNativeContext {
+func (c *SecureNativeContextBuilder) Build() *SecureNativeContext {
 	return c.Context
 }
 

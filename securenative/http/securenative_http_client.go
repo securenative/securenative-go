@@ -16,7 +16,7 @@ const UserAgentHeaderValue = "SecureNative-python"
 const ContentTypeHeader = "Content-Type"
 const ContentTypeHeaderValue = "application/json"
 
-type HttpClient interface {
+type HttpClientInterface interface {
 	Post(path string, body string) map[string]string
 }
 
@@ -28,7 +28,7 @@ func NewSecureNativeHttpClient(options SecureNativeOptions) *SecureNativeHttpCli
 	return &SecureNativeHttpClient{Options: options}
 }
 
-func (c *SecureNativeHttpClient) Post(path string, body string) *Response {
+func (c *SecureNativeHttpClient) Post(path string, body []byte) *Response {
 	url := fmt.Sprintf("%s/%s", c.Options.ApiUrl, path)
 	logger := GetLogger()
 

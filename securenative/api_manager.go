@@ -34,7 +34,7 @@ func (m *ApiManager) Track(eventOptions EventOptions) {
 	m.EventManager.SendAsync(event, ApiRoute.Track)
 }
 
-func (m *ApiManager) Verify(eventOptions EventOptions) VerifyResult {
+func (m *ApiManager) Verify(eventOptions EventOptions) *VerifyResult {
 	logger := GetLogger()
 	logger.Debug("Verify event call")
 
@@ -44,9 +44,9 @@ func (m *ApiManager) Verify(eventOptions EventOptions) VerifyResult {
 	if err != nil {
 		logger.Debug(fmt.Sprintf("Failed to call verify; %s", err))
 		if m.Options.FailOverStrategy == FailOverStrategy.FailOpen {
-			return VerifyResult{RiskLevel: RiskLevel.Low, Score: 0, Triggers: nil}
+			return &VerifyResult{RiskLevel: RiskLevel.Low, Score: 0, Triggers: nil}
 		}
-		return VerifyResult{RiskLevel: RiskLevel.High, Score: 1, Triggers: nil}
+		return &VerifyResult{RiskLevel: RiskLevel.High, Score: 1, Triggers: nil}
 	}
 
 	score, _ := strconv.Atoi(res["score"])
