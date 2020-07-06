@@ -116,6 +116,7 @@ func (e *EventManager) StartEventPersist() {
 	logger.Debug("Starting automatic event persistence")
 	if e.Options.AutoSend || e.SendEnabled {
 		e.SendEnabled = true
+		go e.run()
 	} else {
 		logger.Debug("Automatic event persistence is disabled, you should persist events manually")
 	}
@@ -125,12 +126,7 @@ func (e *EventManager) StopEventPersist() {
 	if e.SendEnabled {
 		logger.Debug("Attempting to stop automatic event persistence")
 		e.flush()
-
-		if e.Channel != nil {
-			// TODO: stop channel
-			logger.Error(fmt.Sprintf("Could not stop event scheduler; %s", err))
-		}
-
+		e.SendEnabled = false
 		logger.Debug("Stopped event persistence")
 	}
 }
@@ -142,8 +138,8 @@ func (e *EventManager) flush() {
 }
 
 func (e *EventManager) run() (map[string]string, error) {
-	for {
-		if len(e.Queue) > 0 && e.SendEnabled {
+	for e.SendEnabled {
+		if len(e.Queue) > 0 {
 			for _, item := range e.Queue {
 				res := e.HttpClient.Post(item.Url, item.Body)
 				if res.StatusCode == 401 {
@@ -173,6 +169,7 @@ func (e *EventManager) run() (map[string]string, error) {
 		}
 		time.Sleep(time.Duration(e.Interval / 1000))
 	}
+	return nil, nil
 }
 
 func (e *EventManager) serialize(event SDKEvent) map[string]interface{} {
