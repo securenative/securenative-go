@@ -3,7 +3,6 @@ package http
 import (
 	"bytes"
 	"fmt"
-	. "github.com/securenative/securenative-go/securenative"
 	. "github.com/securenative/securenative-go/securenative/config"
 	. "github.com/securenative/securenative-go/securenative/utils"
 	. "net/http"
@@ -32,8 +31,7 @@ func (c *SecureNativeHttpClient) Post(path string, body []byte) *Response {
 	url := fmt.Sprintf("%s/%s", c.Options.ApiUrl, path)
 	logger := GetLogger()
 
-	var jsonBody = []byte(body)
-	req, err := NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+	req, err := NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
 		logger.Debug(fmt.Sprintf("Failed to build request; %s", err))
 		return nil

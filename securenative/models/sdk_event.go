@@ -30,7 +30,7 @@ func NewSDKEvent(eventOptions EventOptions, secureNativeOptions SecureNativeOpti
 		event.Context = contextBuilder.Build()
 	}
 
-	clientToken, _ := encryptionUtils.Decrypt(event.Context.ClientToken, secureNativeOptions.ApiKey)
+	clientToken := encryptionUtils.Decrypt(event.Context.ClientToken, secureNativeOptions.ApiKey)
 
 	id, err := uuid.NewV4()
 	if err != nil && id != nil {

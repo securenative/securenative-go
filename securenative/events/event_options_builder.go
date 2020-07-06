@@ -1,4 +1,4 @@
-package securenative
+package events
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ func NewEventOptionsBuilder(eventType string) *EventOptionsBuilder {
 	options := EventOptions{
 		Event:      eventType,
 		UserId:     "",
-		UserTraits: nil,
+		UserTraits: UserTraits{},
 		Context:    nil,
 		Properties: nil,
 		Timestamp:  "",

@@ -4,6 +4,7 @@ import (
 	. "github.com/securenative/securenative-go/securenative/config"
 	. "github.com/securenative/securenative-go/securenative/context"
 	. "github.com/securenative/securenative-go/securenative/errors"
+	"github.com/securenative/securenative-go/securenative/events"
 	. "github.com/securenative/securenative-go/securenative/models"
 	. "github.com/securenative/securenative-go/securenative/utils"
 	"io/ioutil"
@@ -18,8 +19,8 @@ type SDKInterface interface {
 
 type SecureNative struct {
 	options      SecureNativeOptions
-	eventManager *EventManager
-	apiManager   *ApiManager
+	eventManager *events.EventManager
+	apiManager   *events.ApiManager
 	logger       *SdKLogger
 }
 
@@ -33,13 +34,13 @@ func newSecureNative(options SecureNativeOptions) (*SecureNative, error) {
 
 	secureNative := &SecureNative{}
 	secureNative.options = options
-	secureNative.eventManager = NewEventManager(options, nil)
+	secureNative.eventManager = events.NewEventManager(options, nil)
 
 	if len(options.ApiUrl) > 0 && options.ApiUrl != "" {
 		secureNative.eventManager.StartEventPersist()
 	}
 
-	secureNative.apiManager = NewApiManager(secureNative.eventManager, options)
+	secureNative.apiManager = events.NewApiManager(secureNative.eventManager, options)
 	secureNative.logger = InitLogger(options.LogLevel)
 
 	return secureNative, nil
@@ -124,8 +125,8 @@ func GetConfigBuilder() *ConfigurationBuilder {
 	return NewConfigurationBuilder()
 }
 
-func (s *SecureNative) GetEventOptionsBuilder(eventType string) *EventOptionsBuilder {
-	return NewEventOptionsBuilder(eventType)
+func (s *SecureNative) GetEventOptionsBuilder(eventType string) *events.EventOptionsBuilder {
+	return events.NewEventOptionsBuilder(eventType)
 }
 
 func GetContextBuilder() *SecureNativeContextBuilder {

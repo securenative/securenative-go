@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	. "github.com/securenative/securenative-go/securenative"
+	. "github.com/securenative/securenative-go/securenative/utils"
 	"gopkg.in/yaml.v2"
 	"os"
 	"strconv"

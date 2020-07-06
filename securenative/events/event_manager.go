@@ -1,4 +1,4 @@
-package securenative
+package events
 
 import (
 	"encoding/json"
@@ -7,12 +7,13 @@ import (
 	. "github.com/securenative/securenative-go/securenative/errors"
 	. "github.com/securenative/securenative-go/securenative/http"
 	. "github.com/securenative/securenative-go/securenative/models"
+	"github.com/securenative/securenative-go/securenative/utils"
 	"io/ioutil"
 	. "net/http"
 	"time"
 )
 
-var logger = GetLogger()
+var logger = utils.GetLogger()
 
 type QueueItem struct {
 	Url   string
@@ -81,18 +82,18 @@ func (e *EventManager) SendAsync(event SDKEvent, path string) {
 	e.Queue = append(e.Queue, item)
 }
 
-func (e *EventManager) SendSync(event SDKEvent, path string, retry bool) (map[string]string, error) {
+func (e *EventManager) SendSync(event SDKEvent, path string, retry bool) (map[string]interface{}, error) {
 	if e.Options.Disable {
 		logger.Warning("SDK is disabled. no operation will be performed")
 		return nil, &SecureNativeSDKIllegalStateError{Msg: "SDK is disabled. no operation will be performed"}
 	}
 
-	logger.Debug(fmt.Sprintf("Attempting to send event %s", event))
 	body, err := json.Marshal(e.serialize(event))
 	if err != nil {
 		logger.Error(fmt.Sprintf("Failed to marshal event body; %s", err))
 		return nil, err
 	}
+	logger.Debug(fmt.Sprintf("Attempting to send event %s", body))
 
 	res := e.HttpClient.Post(
 		path,
@@ -137,7 +138,7 @@ func (e *EventManager) flush() {
 	}
 }
 
-func (e *EventManager) run() (map[string]string, error) {
+func (e *EventManager) run() (map[string]interface{}, error) {
 	for e.SendEnabled {
 		if len(e.Queue) > 0 {
 			for _, item := range e.Queue {
@@ -199,8 +200,8 @@ func (e *EventManager) serialize(event SDKEvent) map[string]interface{} {
 	return serialized
 }
 
-func readBody(response *Response) (map[string]string, error) {
-	var resBody map[string]string
+func readBody(response *Response) (map[string]interface{}, error) {
+	var resBody map[string]interface{}
 
 	b, err := ioutil.ReadAll(response.Body)
 	defer response.Body.Close()

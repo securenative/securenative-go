@@ -1,5 +1,5 @@
-github.com/joeshaw/iso8601 v0.0.0-20140327141645-861d1ce636d0 h1:wrf53Uj+TG07ntTSFTuWYyJdPPfaSbRHn7CZvlzAxq8=
-github.com/joeshaw/iso8601 v0.0.0-20140327141645-861d1ce636d0/go.mod h1:sPXhe9b9ZqQe0SoSy9DSlN2zaifj5LoQs/zs8mCETOQ=
+github.com/jarcoal/httpmock v1.0.5 h1:cHtVEcTxRSX4J0je7mWPfc9BpDpqzXSJ5HbymZmyHck=
+github.com/jarcoal/httpmock v1.0.5/go.mod h1:ATjnClrvW/3tijVmpL/va5Z3aAyGvqU3gCT8nX0Txik=
 github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d h1:VhgPp6v9qf9Agr/56bj7Y/xa04UccTW04VP0Qed4vnQ=
 github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d/go.mod h1:YUTz3bUH2ZwIWBy3CJBeOBEugqcmXREj14T+iG/4k4U=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=

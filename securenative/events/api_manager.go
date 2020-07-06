@@ -1,12 +1,11 @@
-package securenative
+package events
 
 import (
 	"fmt"
 	. "github.com/securenative/securenative-go/securenative/config"
 	. "github.com/securenative/securenative-go/securenative/enums"
 	. "github.com/securenative/securenative-go/securenative/models"
-	"strconv"
-	"strings"
+	"github.com/securenative/securenative-go/securenative/utils"
 )
 
 type ApiManagerInterface interface {
@@ -27,7 +26,7 @@ func NewApiManager(eventManager *EventManager, options SecureNativeOptions) *Api
 }
 
 func (m *ApiManager) Track(eventOptions EventOptions) {
-	logger := GetLogger()
+	logger := utils.GetLogger()
 	logger.Debug("Track event call")
 
 	event := NewSDKEvent(eventOptions, m.Options)
@@ -35,7 +34,7 @@ func (m *ApiManager) Track(eventOptions EventOptions) {
 }
 
 func (m *ApiManager) Verify(eventOptions EventOptions) *VerifyResult {
-	logger := GetLogger()
+	logger := utils.GetLogger()
 	logger.Debug("Verify event call")
 
 	event := NewSDKEvent(eventOptions, m.Options)
@@ -49,11 +48,16 @@ func (m *ApiManager) Verify(eventOptions EventOptions) *VerifyResult {
 		return &VerifyResult{RiskLevel: RiskLevel.High, Score: 1, Triggers: nil}
 	}
 
-	score, _ := strconv.Atoi(res["score"])
-	triggers :=  strings.Split(res["triggers"], ",")
-	return VerifyResult{
-		RiskLevel: res["riskLevel"],
-		Score:     int32(score),
+	score := res["score"].(float64)
+
+	var triggers []string
+	for _, v := range res["triggers"].([]interface{}) {
+		triggers = append(triggers, fmt.Sprint(v))
+	}
+
+	return &VerifyResult{
+		RiskLevel: res["riskLevel"].(string),
+		Score:     score,
 		Triggers:  triggers,
 	}
 }
