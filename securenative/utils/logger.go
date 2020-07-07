@@ -31,13 +31,13 @@ func InitLogger(logLevel string) *SdKLogger {
 
 func GetLogger() *SdKLogger {
 	if SecureNativeLogger == nil {
-		InitLogger("DEBUG")
+		InitLogger("CRITICAL")
 	}
 	return SecureNativeLogger
 }
 
 func (l *SdKLogger) Info(msg string) {
-	if l.Log != nil && strings.ToLower(l.LogLevel) == "info" {
+	if l.Log != nil && strings.ToLower(l.LogLevel) == "info" || l.Log != nil && strings.ToLower(l.LogLevel) == "debug" {
 		l.Log.Println(msg)
 	}
 }
@@ -49,19 +49,19 @@ func (l *SdKLogger) Debug(msg string) {
 }
 
 func (l *SdKLogger) Warning(msg string) {
-	if l.Log != nil && strings.ToLower(l.LogLevel) == "warning" {
+	if l.Log != nil && strings.ToLower(l.LogLevel) == "warning" || l.Log != nil && strings.ToLower(l.LogLevel) == "debug" {
 		l.Log.Println(msg)
 	}
 }
 
 func (l *SdKLogger) Error(msg string) {
-	if l.Log != nil && strings.ToLower(l.LogLevel) == "error" {
+	if l.Log != nil && strings.ToLower(l.LogLevel) == "error" || l.Log != nil && strings.ToLower(l.LogLevel) == "debug" {
 		l.Log.Println(msg)
 	}
 }
 
 func (l *SdKLogger) Critical(msg string) {
-	if l.Log != nil && strings.ToLower(l.LogLevel) == "critical" {
+	if l.Log != nil && strings.ToLower(l.LogLevel) == "critical" || l.Log != nil && strings.ToLower(l.LogLevel) == "debug" {
 		l.Log.Println(msg)
 	}
 }

@@ -1,4 +1,4 @@
-name: Publish Go Package
+name: Publish
 
 on:
   release:
