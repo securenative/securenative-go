@@ -11,7 +11,7 @@ func NewRequestUtils() *RequestUtils {
 }
 
 func (u *RequestUtils) GetSecureHeaderFromRequest(request *http.Request) string {
-	return request.Header.Get(SecureNativeHeader)
+	return request.Header[SecureNativeHeader][0]
 }
 
 func (u *RequestUtils) GetClientIpFromRequest(request *http.Request) string {

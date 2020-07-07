@@ -37,7 +37,7 @@ func (c *ConfigurationBuilder) DefaultSecureNativeOptions() SecureNativeOptions 
 }
 
 func (c *ConfigurationBuilder) WithApiKey(apiKey string) *ConfigurationBuilder {
-	c.Options.ApiUrl = apiKey
+	c.Options.ApiKey = apiKey
 	return c
 }
 

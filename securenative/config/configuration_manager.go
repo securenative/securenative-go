@@ -27,7 +27,7 @@ func (c *ConfigurationManager) LoadConfig() SecureNativeOptions {
 
 	resourcePath := DefaultConfigFile
 	if len(os.Getenv(CustomConfigFileEnvName)) > 0 {
-		resourcePath = DefaultConfigFile
+		resourcePath = os.Getenv(CustomConfigFileEnvName)
 	}
 
 	properties := c.readResourceFile(resourcePath)
@@ -41,7 +41,7 @@ func (c *ConfigurationManager) LoadConfig() SecureNativeOptions {
 		WithAutoSend(c.getBoolEnvOrDefault(properties, "SECURENATIVE_AUTO_SEND", options.AutoSend)).
 		WithDisable(c.getBoolEnvOrDefault(properties, "SECURENATIVE_DISABLE", options.Disable)).
 		WithLogLevel(c.getStringEnvOrDefault(properties, "SECURENATIVE_LOG_LEVEL", options.LogLevel)).
-		WithLogLevel(c.getStringEnvOrDefault(properties, "SECURENATIVE_FAILOVER_STRATEGY", options.FailOverStrategy)).Build()
+		WithFailOverStrategy(c.getStringEnvOrDefault(properties, "SECURENATIVE_FAILOVER_STRATEGY", options.FailOverStrategy)).Build()
 }
 
 func (c *ConfigurationManager) readResourceFile(path string) map[string]string {
@@ -49,14 +49,14 @@ func (c *ConfigurationManager) readResourceFile(path string) map[string]string {
 
 	file, err := os.Open(path)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Could not read file %s; %s", path, err))
+		logger.Debug(fmt.Sprintf("Could not read file %s; %s", path, err))
 	}
 
 	var cfg map[string]string
 	decoder := yaml.NewDecoder(file)
 	err = decoder.Decode(&cfg)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Could decode file %s; %s", path, err))
+		logger.Debug(fmt.Sprintf("Could decode file %s; %s", path, err))
 	}
 
 	if file != nil {

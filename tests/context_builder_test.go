@@ -2,15 +2,78 @@ package tests
 
 import (
 	"github.com/securenative/securenative-go/securenative/context"
+	"net/http"
+	"net/url"
+	"reflect"
 	"testing"
 )
 
 func TestCreateContextFromRequest(t *testing.T) {
-	// TODO implement me
+	clientToken := "71532c1fad2c7f56118f7969e401f3cf080239140d208e7934e6a530818c37e544a0c2330a487bcc6fe4f662a57f265a3ed9f37871e80529128a5e4f2ca02db0fb975ded401398f698f19bb0cafd68a239c6caff99f6f105286ab695eaf3477365bdef524f5d70d9be1d1d474506b433aed05d7ed9a435eeca357de57817b37c638b6bb417ffb101eaf856987615a77a"
+	headers := map[string][]string{
+		"x-securenative": {clientToken},
+	}
+	request := &http.Request{
+		Method: "Post",
+		URL: &url.URL{
+			Scheme: "https",
+			Host:   "www.securenative.com",
+			Path:   "/login",
+		},
+		Header:     headers,
+		Host:       "www.securenative.com",
+		RemoteAddr: "51.68.201.122",
+		RequestURI: "/login/param1=value1&param2=value2",
+	}
+
+	c := context.NewSecureNativeContextBuilder().FromHttpRequest(request)
+	if c.ClientToken != clientToken {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", clientToken, c.ClientToken)
+	}
+	if c.Ip != "51.68.201.122" {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", "51.68.201.122", c.Ip)
+	}
+	if c.Method != "Post" {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", "Post", c.Method)
+	}
+	if c.RemoteIp != "51.68.201.122" {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", "51.68.201.122", c.RemoteIp)
+	}
+	if !reflect.DeepEqual(c.Headers, headers) {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", headers, c.Headers)
+	}
 }
 
 func TestCreateContextFromRequestWithCookie(t *testing.T) {
-	// TODO implement me
+	clientToken := "71532c1fad2c7f56118f7969e401f3cf080239140d208e7934e6a530818c37e544a0c2330a487bcc6fe4f662a57f265a3ed9f37871e80529128a5e4f2ca02db0fb975ded401398f698f19bb0cafd68a239c6caff99f6f105286ab695eaf3477365bdef524f5d70d9be1d1d474506b433aed05d7ed9a435eeca357de57817b37c638b6bb417ffb101eaf856987615a77a"
+	cookie := &http.Cookie{Name: "_sn", Value: clientToken}
+	request := &http.Request{
+		Method: "Post",
+		URL: &url.URL{
+			Scheme: "https",
+			Host:   "www.securenative.com",
+			Path:   "/login",
+		},
+		Header:     map[string][]string{},
+		Host:       "www.securenative.com",
+		RemoteAddr: "51.68.201.122",
+		RequestURI: "/login/param1=value1&param2=value2",
+	}
+	request.AddCookie(cookie)
+
+	c := context.NewSecureNativeContextBuilder().FromHttpRequest(request)
+	if c.ClientToken != clientToken {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", clientToken, c.ClientToken)
+	}
+	if c.Ip != "51.68.201.122" {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", "51.68.201.122", c.Ip)
+	}
+	if c.Method != "Post" {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", "Post", c.Method)
+	}
+	if c.RemoteIp != "51.68.201.122" {
+		t.Errorf("Test Failed: expected to recieve: %s, got: %s", "51.68.201.122", c.RemoteIp)
+	}
 }
 
 func TestCreateDefaultContextBuilder(t *testing.T) {

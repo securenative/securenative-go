@@ -137,13 +137,20 @@ func (s *SecureNative) GetSecureNativeOptions() config.SecureNativeOptions {
 	return s.options
 }
 
-func GetInstance() *SecureNative {
-	return secureNative
+func GetInstance() (*SecureNative, error) {
+	if secureNative == nil {
+		return secureNative, &errors.SecureNativeSDKIllegalStateError{Msg: "SDK was not initialized"}
+	}
+	return secureNative, nil
 }
 
-func (s *SecureNative) ReleaseSDK() {
+func (s *SecureNative) Stop() {
 	if secureNative != nil {
 		s.eventManager.StopEventPersist()
 		secureNative = nil
 	}
+}
+
+func Flush () {
+	secureNative = nil
 }

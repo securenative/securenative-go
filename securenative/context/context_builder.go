@@ -32,7 +32,7 @@ func (c *SecureNativeContextBuilder) FromHttpRequest(request *http.Request) *Sec
 	requestUtils := utils.RequestUtils{}
 	cookie, err := request.Cookie(SecureNativeCookie)
 	clientToken := ""
-	if err == nil {
+	if err == nil && cookie != nil {
 		clientToken = cookie.Value
 	}
 
