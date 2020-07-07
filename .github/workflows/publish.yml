@@ -8,6 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
       - name: Notify slack success
         if: success()
         id: slack # IMPORTANT: reference this step ID value in future Slack steps
@@ -19,16 +20,12 @@ jobs:
           status: STARTING
           color: warning
 
-      - name: release linux/386
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@master
-          - name: compile and release
-            uses: ngs/go-release.action@v1.0.1
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              GOARCH: "386"
-              GOOS: linux
+      - name: compile and release
+        uses: ngs/go-release.action@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOARCH: "386"
+          GOOS: linux
 
       - name: Notify slack success
         if: success()
