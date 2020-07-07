@@ -6,8 +6,8 @@
 *.dll
 *.so
 *.dylib
-*.yml
-*.yaml
+securenative.yaml
+securenative.yml
 
 # Test binary, built with `go test -c`
 *.test
