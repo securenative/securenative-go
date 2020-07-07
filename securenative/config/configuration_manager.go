@@ -9,7 +9,7 @@ import (
 )
 
 const DefaultConfigFile = "securenative.yml"
-const CustomConfigFileEnvName = "SECURENATIVE_COMFIG_FILE"
+const CustomConfigFileEnvName = "SECURENATIVE_CONFIG_FILE"
 
 type ConfigurationManagerInterface interface {
 	LoadConfig() SecureNativeOptions

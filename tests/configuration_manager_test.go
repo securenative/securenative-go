@@ -2,10 +2,28 @@ package tests
 
 import (
 	"github.com/securenative/securenative-go/securenative/config"
+	"gopkg.in/yaml.v2"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 )
 
+func createConfigFile() {
+	filename, _ := filepath.Abs("securenative.yml")
+	filename = strings.Replace(filename, "/tests", "", -1)
+	f, _ := os.Create(filename)
+	defer f.Close()
+	options := config.SecureNativeOptions{
+		ApiKey: "Some Random Api Key",
+	}
+
+	out, _ := yaml.Marshal(options)
+	_, _ = f.Write(out)
+}
+
 func TestParseConfigFileCorrectly(t *testing.T) {
+	createConfigFile()
 	configManager := config.NewConfigurationManager()
 	options := configManager.LoadConfig()
 
