@@ -47,7 +47,7 @@ import (
 )
 
 func main() {
-    sn, err :=  sdk.InitSDK()
+    sn, err :=  sdk.InitSDK("path/to/securenative.yml") // For default config use `sdk.InitSDK("")`
     if err != nil || sn == nil {
          log.Fatal("Do some error handling")
     }

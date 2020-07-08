@@ -20,7 +20,7 @@ func TestGetSdkInstanceWithoutInitThrows(t *testing.T) {
 func TestInitSdkWithoutApiKeyShouldThrow(t *testing.T) {
 	sdk.Flush()
 
-	_, err := sdk.InitSDK()
+	_, err := sdk.InitSDK("")
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKError error to be thrown")
 	}
@@ -29,7 +29,7 @@ func TestInitSdkWithoutApiKeyShouldThrow(t *testing.T) {
 func TestInitDdkWithEmptyApiKeyShouldThrow(t *testing.T) {
 	sdk.Flush()
 
-	_, err := sdk.InitSDK()
+	_, err := sdk.InitSDK("")
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKError error to be thrown")
 	}
@@ -39,13 +39,13 @@ func TestInitSdkWithApiKeyAndDefaults(t *testing.T) {
 	sdk.Flush()
 
 	apiKey := "SomeApiKey"
-	sdk, err := sdk.InitSDKWithApiKey(apiKey)
+	s, err := sdk.InitSDKWithApiKey(apiKey)
 
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
 	}
 
-	options := sdk.GetSecureNativeOptions()
+	options := s.GetSecureNativeOptions()
 	if options.ApiKey != apiKey {
 		t.Errorf("Test Failed: expected to reiecve: %s, got: %s", apiKey, options.ApiKey)
 	}
@@ -91,15 +91,15 @@ func TestInitSdkWithApiKeyAndGetInstance(t *testing.T) {
 	sdk.Flush()
 
 	apiKey := "SomeApiKey"
-	sdk, err := sdk.InitSDKWithApiKey(apiKey)
+	s, err := sdk.InitSDKWithApiKey(apiKey)
 
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
 	}
 
 	instance, _ := sdk.GetInstance()
-	if !reflect.DeepEqual(sdk, instance) {
-		t.Errorf("Test Failed: expected both instances to be equal; sdk: %v; instance: %v", sdk, instance)
+	if !reflect.DeepEqual(s, instance) {
+		t.Errorf("Test Failed: expected both instances to be equal; sdk: %v; instance: %v", s, instance)
 	}
 }
 
@@ -115,12 +115,12 @@ func TestInitSdkWithBuilder(t *testing.T) {
 		WithInterval(10).
 		WithApiUrl(apiUrl).Build()
 
-	sdk, err := sdk.InitSDKWithOptions(options)
+	s, err := sdk.InitSDKWithOptions(options)
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
 	}
 
-	o := sdk.GetSecureNativeOptions()
+	o := s.GetSecureNativeOptions()
 	if o.ApiKey != apiKey {
 		t.Errorf("Test Failed: expected to reiecve: %s, got: %s", apiKey, o.ApiKey)
 	}

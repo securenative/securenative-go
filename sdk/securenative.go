@@ -45,13 +45,13 @@ func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) 
 	return secureNative, nil
 }
 
-func InitSDK() (*SecureNative, error) {
+func InitSDK(confPath string) (*SecureNative, error) {
 	if secureNative != nil {
 		return secureNative, &errors.SecureNativeSDKError{Msg: "This SDK was already initialized"}
 	}
 
 	configManager := config.NewConfigurationManager()
-	options := configManager.LoadConfig()
+	options := configManager.LoadConfig(confPath)
 	sn, err := newSecureNative(options)
 
 	if err != nil {

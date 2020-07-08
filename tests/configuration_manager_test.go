@@ -10,10 +10,11 @@ import (
 	"testing"
 )
 
+var f, _ = filepath.Abs("securenative.yml")
+var configPath = strings.Replace(f, "/tests", "", -1)
+
 func createConfigFile() {
-	filename, _ := filepath.Abs("securenative.yml")
-	filename = strings.Replace(filename, "/tests", "", -1)
-	f, _ := os.Create(filename)
+	f, _ := os.Create(configPath)
 	defer f.Close()
 	options := config.SecureNativeOptions{
 		ApiKey: "Some Random Api Key",
@@ -26,7 +27,7 @@ func createConfigFile() {
 func TestParseConfigFileCorrectly(t *testing.T) {
 	createConfigFile()
 	configManager := config.NewConfigurationManager()
-	options := configManager.LoadConfig()
+	options := configManager.LoadConfig(configPath)
 
 	if options.ApiKey != "Some Random Api Key" {
 		t.Error("Test Failed: configuration file was not read correctly")
@@ -35,7 +36,7 @@ func TestParseConfigFileCorrectly(t *testing.T) {
 
 func TestLoadDefaultConfig(t *testing.T) {
 	configManager := config.NewConfigurationManager()
-	options := configManager.LoadConfig()
+	options := configManager.LoadConfig("")
 
 	if options.ApiKey != "" {
 		t.Errorf("Test Failed: expected to reiecve: %s, got: %s", "", options.ApiKey)
@@ -79,7 +80,7 @@ func TestGetConfigFromEnvVariables(t *testing.T) {
 	_ = os.Setenv("SECURENATIVE_LOG_LEVEL", "DEBUG")
 	_ = os.Setenv("SECURENATIVE_FAILOVER_STRATEGY", "fail-closed")
 
-	options := configManager.LoadConfig()
+	options := configManager.LoadConfig("")
 	os.Clearenv()
 
 	if options.ApiKey != "SOME_ENV_API_KEY" {

@@ -21,11 +21,14 @@ func NewConfigurationManager() *ConfigurationManager {
 	return &ConfigurationManager{}
 }
 
-func (c *ConfigurationManager) LoadConfig() SecureNativeOptions {
+func (c *ConfigurationManager) LoadConfig(configPath string) SecureNativeOptions {
 	configurationBuilder := NewConfigurationBuilder()
 	options := configurationBuilder.DefaultSecureNativeOptions()
 
 	resourcePath := DefaultConfigFile
+	if len(configPath) > 1 && configPath != "" {
+		resourcePath = configPath
+	}
 	if len(os.Getenv(CustomConfigFileEnvName)) > 0 {
 		resourcePath = os.Getenv(CustomConfigFileEnvName)
 	}
