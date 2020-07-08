@@ -1,11 +1,11 @@
-package securenative
+package sdk
 
 import (
-	"github.com/securenative/securenative-go/securenative/config"
-	"github.com/securenative/securenative-go/securenative/errors"
-	"github.com/securenative/securenative-go/securenative/events"
-	"github.com/securenative/securenative-go/securenative/models"
-	"github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/errors"
+	"github.com/securenative/securenative-go/events"
+	"github.com/securenative/securenative-go/models"
+	"github.com/securenative/securenative-go/utils"
 	"io/ioutil"
 	"net/http"
 )
@@ -17,10 +17,10 @@ type SDKInterface interface {
 }
 
 type SecureNative struct {
-	options        config.SecureNativeOptions
-	eventManager   *events.EventManager
-	apiManager     *events.ApiManager
-	logger         *utils.SdKLogger
+	options      config.SecureNativeOptions
+	eventManager *events.EventManager
+	apiManager   *events.ApiManager
+	logger       *utils.SdKLogger
 }
 
 var secureNative *SecureNative
@@ -118,10 +118,6 @@ func (s *SecureNative) VerifyRequestPayload(request *http.Request) bool {
 	}
 
 	return signatureUtils.IsValidSignature(s.options.ApiKey, string(body), requestSignature)
-}
-
-func (s *SecureNative) GetEventOptionsBuilder(eventType string) *events.EventOptionsBuilder {
-	return events.NewEventOptionsBuilder(eventType)
 }
 
 func (s *SecureNative) GetSecureNativeOptions() config.SecureNativeOptions {

@@ -42,12 +42,12 @@ SecureNative can automatically load your config from *securenative.yml* file or 
 package main
 
 import (
-    "github.com/securenative/securenative-go/securenative"
+    "github.com/securenative/securenative-go/sdk"
     "log"
 )
 
 func main() {
-    sn, err :=  securenative.InitSDK()
+    sn, err :=  sdk.InitSDK()
     if err != nil || sn == nil {
          log.Fatal("Do some error handling")
     }
@@ -61,12 +61,12 @@ func main() {
 package main
 
 import (
-	"github.com/securenative/securenative-go/securenative"
+	"github.com/securenative/securenative-go/sdk"
     "log"
 )
 
 func main() {
-    sn, err :=  securenative.InitSDKWithApiKey("YOUR_API_KEY")
+    sn, err :=  sdk.InitSDKWithApiKey("YOUR_API_KEY")
     if err != nil {
          log.Fatal("Do some error handling")
     }
@@ -80,14 +80,14 @@ func main() {
 package main
 
 import (
-    "github.com/securenative/securenative-go/securenative"
-    "github.com/securenative/securenative-go/securenative/config"
+    "github.com/securenative/securenative-go/config"
+    "github.com/securenative/securenative-go/sdk"
     "log"
 )
 
 func main() {
     configBuilder := config.NewConfigurationBuilder()
-    sn, err := securenative.InitSDKWithOptions(configBuilder.WithApiKey("API_KEY").WithMaxEvents(10).WithLogLevel("ERROR").Build())
+    sn, err := sdk.InitSDKWithOptions(configBuilder.WithApiKey("API_KEY").WithMaxEvents(10).WithLogLevel("ERROR").Build())
     if err != nil {
          log.Fatal("Do some error handling")
     }
@@ -102,12 +102,12 @@ Once initialized, sdk will create a singleton instance which you can get:
 package main
 
 import (
-	"github.com/securenative/securenative-go/securenative"
+	"github.com/securenative/securenative-go/sdk"
     "log"
 )
 
 func main() {
-    sn, err := securenative.GetInstance()
+    sn, err := sdk.GetInstance()
     if err != nil {
         log.Fatal("Do some error handling")
     }
@@ -125,16 +125,16 @@ instance. Make sure you build event with the EventBuilder:
 package main
 
 import (
-    "github.com/securenative/securenative-go/securenative"
-    "github.com/securenative/securenative-go/securenative/context"
-    "github.com/securenative/securenative-go/securenative/enums"
-    "github.com/securenative/securenative-go/securenative/events"
-    "github.com/securenative/securenative-go/securenative/models"
+    "github.com/securenative/securenative-go/context"
+    "github.com/securenative/securenative-go/enums"
+    "github.com/securenative/securenative-go/events"
+    "github.com/securenative/securenative-go/models"
+    "github.com/securenative/securenative-go/sdk"
     "log"
 )
 
 func main() {
-    sn, err := securenative.GetInstance()
+    sn, err := sdk.GetInstance()
     if err != nil {
             log.Fatal("Do some error handling")
     }
@@ -160,17 +160,17 @@ You can also create request context from requests:
 package demo
 
 import (
-    "github.com/securenative/securenative-go/securenative"
-    "github.com/securenative/securenative-go/securenative/context"
-    "github.com/securenative/securenative-go/securenative/enums"
-    "github.com/securenative/securenative-go/securenative/events"
-    "github.com/securenative/securenative-go/securenative/models"
+    "github.com/securenative/securenative-go/context"
+    "github.com/securenative/securenative-go/enums"
+    "github.com/securenative/securenative-go/events"
+    "github.com/securenative/securenative-go/models"
+    "github.com/securenative/securenative-go/sdk"
     "log"
     "net/http"
 )
 
 func Track(request *http.Request) {
-    sn, err := securenative.GetInstance()
+    sn, err := sdk.GetInstance()
     if err != nil {
         log.Fatal("Do some error handling")
     }
@@ -197,16 +197,16 @@ func Track(request *http.Request) {
 package main
 
 import (
-    "github.com/securenative/securenative-go/securenative"
-    "github.com/securenative/securenative-go/securenative/context"
-    "github.com/securenative/securenative-go/securenative/enums"
-    "github.com/securenative/securenative-go/securenative/events"
-    "github.com/securenative/securenative-go/securenative/models"
+    "github.com/securenative/securenative-go/context"
+    "github.com/securenative/securenative-go/enums"
+    "github.com/securenative/securenative-go/events"
+    "github.com/securenative/securenative-go/models"
+    "github.com/securenative/securenative-go/sdk"
     "log"
 )
 
 func main() {
-    sn, err := securenative.GetInstance()
+    sn, err := sdk.GetInstance()
     if err != nil {
         log.Fatal("Do some error handling")
     }
@@ -237,13 +237,13 @@ Apply our filter to verify the request is from us, for example:
 package demo
 
 import (
-    "github.com/securenative/securenative-go/securenative"
+    "github.com/securenative/securenative-go/sdk"
     "log"
     "net/http"
 )
 
 func VerifyWebHook(request *http.Request) bool {
-    sn, err := securenative.GetInstance()
+    sn, err := sdk.GetInstance()
     if err != nil {
         log.Fatal("Do some error handling")
     }

@@ -1,6 +1,6 @@
 package config
 
-import "github.com/securenative/securenative-go/securenative/enums"
+import "github.com/securenative/securenative-go/enums"
 
 type ConfigurationBuilder struct {
 	Options SecureNativeOptions

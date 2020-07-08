@@ -1,45 +1,45 @@
 package tests
 
 import (
-	"github.com/securenative/securenative-go/securenative"
-	"github.com/securenative/securenative-go/securenative/config"
-	"github.com/securenative/securenative-go/securenative/enums"
+	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/enums"
+	"github.com/securenative/securenative-go/sdk"
 	"reflect"
 	"testing"
 )
 
 func TestGetSdkInstanceWithoutInitThrows(t *testing.T) {
-	securenative.Flush()
+	sdk.Flush()
 
-	_, err := securenative.GetInstance()
+	_, err := sdk.GetInstance()
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKIllegalStateError error to be thrown")
 	}
 }
 
 func TestInitSdkWithoutApiKeyShouldThrow(t *testing.T) {
-	securenative.Flush()
+	sdk.Flush()
 
-	_, err := securenative.InitSDK()
+	_, err := sdk.InitSDK()
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKError error to be thrown")
 	}
 }
 
 func TestInitDdkWithEmptyApiKeyShouldThrow(t *testing.T) {
-	securenative.Flush()
+	sdk.Flush()
 
-	_, err := securenative.InitSDK()
+	_, err := sdk.InitSDK()
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKError error to be thrown")
 	}
 }
 
 func TestInitSdkWithApiKeyAndDefaults(t *testing.T) {
-	securenative.Flush()
+	sdk.Flush()
 
 	apiKey := "SomeApiKey"
-	sdk, err := securenative.InitSDKWithApiKey(apiKey)
+	sdk, err := sdk.InitSDKWithApiKey(apiKey)
 
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
@@ -76,11 +76,11 @@ func TestInitSdkWithApiKeyAndDefaults(t *testing.T) {
 }
 
 func TestInitSdkTwiceWillThrow(t *testing.T) {
-	securenative.Flush()
+	sdk.Flush()
 
 	apiKey := "SomeApiKey"
-	_, err := securenative.InitSDKWithApiKey(apiKey)
-	_, err = securenative.InitSDKWithApiKey(apiKey)
+	_, err := sdk.InitSDKWithApiKey(apiKey)
+	_, err = sdk.InitSDKWithApiKey(apiKey)
 
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKError error to be thrown")
@@ -88,23 +88,23 @@ func TestInitSdkTwiceWillThrow(t *testing.T) {
 }
 
 func TestInitSdkWithApiKeyAndGetInstance(t *testing.T) {
-	securenative.Flush()
+	sdk.Flush()
 
 	apiKey := "SomeApiKey"
-	sdk, err := securenative.InitSDKWithApiKey(apiKey)
+	sdk, err := sdk.InitSDKWithApiKey(apiKey)
 
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
 	}
 
-	instance, _ := securenative.GetInstance()
+	instance, _ := sdk.GetInstance()
 	if !reflect.DeepEqual(sdk, instance) {
 		t.Errorf("Test Failed: expected both instances to be equal; sdk: %v; instance: %v", sdk, instance)
 	}
 }
 
 func TestInitSdkWithBuilder(t *testing.T) {
-	securenative.Flush()
+	sdk.Flush()
 
 	apiKey := "SomeApiKey"
 	apiUrl := "SomeApiUrl"
@@ -115,7 +115,7 @@ func TestInitSdkWithBuilder(t *testing.T) {
 		WithInterval(10).
 		WithApiUrl(apiUrl).Build()
 
-	sdk, err := securenative.InitSDKWithOptions(options)
+	sdk, err := sdk.InitSDKWithOptions(options)
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
 	}

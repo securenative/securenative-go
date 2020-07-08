@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"github.com/securenative/securenative-go/securenative/config"
-	"github.com/securenative/securenative-go/securenative/enums"
+	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/enums"
 	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"

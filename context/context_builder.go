@@ -1,7 +1,7 @@
 package context
 
 import (
-	"github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/utils"
 	"net/http"
 )
 

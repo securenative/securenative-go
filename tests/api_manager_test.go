@@ -2,11 +2,11 @@ package tests
 
 import (
 	"github.com/jarcoal/httpmock"
-	"github.com/securenative/securenative-go/securenative/config"
-	"github.com/securenative/securenative-go/securenative/context"
-	"github.com/securenative/securenative-go/securenative/enums"
-	"github.com/securenative/securenative-go/securenative/events"
-	"github.com/securenative/securenative-go/securenative/models"
+	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/context"
+	"github.com/securenative/securenative-go/enums"
+	"github.com/securenative/securenative-go/events"
+	"github.com/securenative/securenative-go/models"
 	"strconv"
 	"testing"
 )

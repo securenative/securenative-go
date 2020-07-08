@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"github.com/securenative/securenative-go/securenative/context"
+	"github.com/securenative/securenative-go/context"
 	"net/http"
 	"net/url"
 	"reflect"

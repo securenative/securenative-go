@@ -2,9 +2,9 @@ package events
 
 import (
 	"fmt"
-	"github.com/securenative/securenative-go/securenative/context"
-	"github.com/securenative/securenative-go/securenative/errors"
-	"github.com/securenative/securenative-go/securenative/models"
+	"github.com/securenative/securenative-go/context"
+	"github.com/securenative/securenative-go/errors"
+	"github.com/securenative/securenative-go/models"
 )
 
 const MaxPropertiesSize = 10

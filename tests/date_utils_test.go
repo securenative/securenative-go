@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/utils"
 	"testing"
 )
 

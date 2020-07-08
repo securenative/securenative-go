@@ -2,8 +2,8 @@ package tests
 
 import (
 	"github.com/jarcoal/httpmock"
-	"github.com/securenative/securenative-go/securenative/events"
-	"github.com/securenative/securenative-go/securenative/models"
+	"github.com/securenative/securenative-go/events"
+	"github.com/securenative/securenative-go/models"
 	"testing"
 	"time"
 )

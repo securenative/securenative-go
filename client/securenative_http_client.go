@@ -3,8 +3,8 @@ package client
 import (
 	"bytes"
 	"fmt"
-	"github.com/securenative/securenative-go/securenative/config"
-	"github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/utils"
 	"net/http"
 )
 

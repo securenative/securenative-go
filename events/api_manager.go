@@ -2,10 +2,10 @@ package events
 
 import (
 	"fmt"
-	"github.com/securenative/securenative-go/securenative/config"
-	"github.com/securenative/securenative-go/securenative/enums"
-	"github.com/securenative/securenative-go/securenative/models"
-	"github.com/securenative/securenative-go/securenative/utils"
+	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/enums"
+	"github.com/securenative/securenative-go/models"
+	"github.com/securenative/securenative-go/utils"
 )
 
 type ApiManagerInterface interface {

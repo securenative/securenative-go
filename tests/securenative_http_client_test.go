@@ -2,7 +2,7 @@ package tests
 
 import (
 	"github.com/jarcoal/httpmock"
-	"github.com/securenative/securenative-go/securenative/client"
+	"github.com/securenative/securenative-go/client"
 	"testing"
 )
 
