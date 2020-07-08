@@ -2,7 +2,6 @@ package securenative
 
 import (
 	"github.com/securenative/securenative-go/securenative/config"
-	"github.com/securenative/securenative-go/securenative/context"
 	"github.com/securenative/securenative-go/securenative/errors"
 	"github.com/securenative/securenative-go/securenative/events"
 	"github.com/securenative/securenative-go/securenative/models"
@@ -18,10 +17,10 @@ type SDKInterface interface {
 }
 
 type SecureNative struct {
-	options      config.SecureNativeOptions
-	eventManager *events.EventManager
-	apiManager   *events.ApiManager
-	logger       *utils.SdKLogger
+	options        config.SecureNativeOptions
+	eventManager   *events.EventManager
+	apiManager     *events.ApiManager
+	logger         *utils.SdKLogger
 }
 
 var secureNative *SecureNative
@@ -85,7 +84,7 @@ func InitSDKWithApiKey(apiKey string) (*SecureNative, error) {
 
 	u := utils.Utils{}
 	if u.IsNilOrEmpty(apiKey) {
-		return nil,  &errors.SecureNativeConfigError{Msg: "You must pass your SecureNative api key"}
+		return nil, &errors.SecureNativeConfigError{Msg: "You must pass your SecureNative api key"}
 	}
 
 	configBuilder := config.NewConfigurationBuilder()
@@ -121,16 +120,8 @@ func (s *SecureNative) VerifyRequestPayload(request *http.Request) bool {
 	return signatureUtils.IsValidSignature(s.options.ApiKey, string(body), requestSignature)
 }
 
-func GetConfigBuilder() *config.ConfigurationBuilder {
-	return config.NewConfigurationBuilder()
-}
-
 func (s *SecureNative) GetEventOptionsBuilder(eventType string) *events.EventOptionsBuilder {
 	return events.NewEventOptionsBuilder(eventType)
-}
-
-func GetContextBuilder() *context.SecureNativeContextBuilder {
-	return context.NewSecureNativeContextBuilder()
 }
 
 func (s *SecureNative) GetSecureNativeOptions() config.SecureNativeOptions {
@@ -151,6 +142,6 @@ func (s *SecureNative) Stop() {
 	}
 }
 
-func Flush () {
+func Flush() {
 	secureNative = nil
 }

@@ -41,15 +41,18 @@ SecureNative can automatically load your config from *securenative.yml* file or 
 ```go
 package main
 
-import "github.com/securenative/securenative-go/securenative"
+import (
+    "github.com/securenative/securenative-go/securenative"
+    "log"
+)
 
 func main() {
     sn, err :=  securenative.InitSDK()
-    if err != nil {
-         // Do some error handling
+    if err != nil || sn == nil {
+         log.Fatal("Do some error handling")
     }
 
-    defer sn.ReleaseSDK()
+    defer sn.Stop()
 }
 ```
 ### Option 2: Initialize via API Key
@@ -57,15 +60,18 @@ func main() {
 ```go
 package main
 
-import "github.com/securenative/securenative-go/securenative"
+import (
+	"github.com/securenative/securenative-go/securenative"
+    "log"
+)
 
 func main() {
     sn, err :=  securenative.InitSDKWithApiKey("YOUR_API_KEY")
     if err != nil {
-         // Do some error handling
+         log.Fatal("Do some error handling")
     }
 
-    defer sn.ReleaseSDK()
+    defer sn.Stop()
 }
 ```
 
@@ -75,17 +81,18 @@ package main
 
 import (
     "github.com/securenative/securenative-go/securenative"
-    . "github.com/securenative/securenative-go/securenative/config"
+    "github.com/securenative/securenative-go/securenative/config"
+    "log"
 )
 
 func main() {
-    configBuilder := securenative.GetConfigBuilder()
+    configBuilder := config.NewConfigurationBuilder()
     sn, err := securenative.InitSDKWithOptions(configBuilder.WithApiKey("API_KEY").WithMaxEvents(10).WithLogLevel("ERROR").Build())
     if err != nil {
-         // Do some error handling
+         log.Fatal("Do some error handling")
     }
 
-    defer sn.ReleaseSDK()
+    defer sn.Stop()
 }
 ```
 
@@ -94,12 +101,18 @@ Once initialized, sdk will create a singleton instance which you can get:
 ```go
 package main
 
-import "github.com/securenative/securenative-go/securenative"
+import (
+	"github.com/securenative/securenative-go/securenative"
+    "log"
+)
 
 func main() {
-    sn := securenative.GetInstance()
+    sn, err := securenative.GetInstance()
+    if err != nil {
+        log.Fatal("Do some error handling")
+    }
     
-    defer sn.ReleaseSDK()
+    defer sn.Stop()
 }
 ```
 
@@ -113,23 +126,28 @@ package main
 
 import (
     "github.com/securenative/securenative-go/securenative"
-    . "github.com/securenative/securenative-go/securenative/config"
-    . "github.com/securenative/securenative-go/securenative/context"
-    . "github.com/securenative/securenative-go/securenative/enums"
-    . "github.com/securenative/securenative-go/securenative/models"
+    "github.com/securenative/securenative-go/securenative/context"
+    "github.com/securenative/securenative-go/securenative/enums"
+    "github.com/securenative/securenative-go/securenative/events"
+    "github.com/securenative/securenative-go/securenative/models"
+    "log"
 )
 
 func main() {
-    sn := securenative.GetInstance()
-    contextBuilder := securenative.GetContextBuilder()
-    eventOptionsBuilder := sn.GetEventOptionsBuilder(EventTypes.LogIn)
-    
-    defer sn.ReleaseSDK()
-    
-    context := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(context).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
+    sn, err := securenative.GetInstance()
     if err != nil {
-        // Do some error handling
+            log.Fatal("Do some error handling")
+    }
+
+    contextBuilder := context.NewSecureNativeContextBuilder()
+    eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn)
+    
+    defer sn.Stop()
+    
+    c := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string][]string{"user-agent": {"Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}}).Build()
+    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(c).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
+    if err != nil {
+        log.Fatal("Do some error handling")
     }
     
     sn.Track(eventOptions)
@@ -139,28 +157,32 @@ func main() {
 You can also create request context from requests:
 
 ```go
-package main
+package demo
 
 import (
     "github.com/securenative/securenative-go/securenative"
-    . "github.com/securenative/securenative-go/securenative/config"
-    . "github.com/securenative/securenative-go/securenative/context"
-    . "github.com/securenative/securenative-go/securenative/enums"
-    . "github.com/securenative/securenative-go/securenative/models"
+    "github.com/securenative/securenative-go/securenative/context"
+    "github.com/securenative/securenative-go/securenative/enums"
+    "github.com/securenative/securenative-go/securenative/events"
+    "github.com/securenative/securenative-go/securenative/models"
+    "log"
+    "net/http"
 )
 
-func main() {
-    sn := securenative.GetInstance()
-    contextBuilder := securenative.GetContextBuilder()
-    eventOptionsBuilder := sn.GetEventOptionsBuilder(EventTypes.LogIn)
-    
-    context := contextBuilder.FromHttpRequest(request)
-    
-    defer sn.ReleaseSDK()
-    
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(context).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
+func Track(request *http.Request) {
+    sn, err := securenative.GetInstance()
     if err != nil {
-        // Do some error handling
+        log.Fatal("Do some error handling")
+    }
+    contextBuilder := context.NewSecureNativeContextBuilder()
+    eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn) 
+    c := contextBuilder.FromHttpRequest(request)
+
+    defer sn.Stop()
+    
+    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(c).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
+    if err != nil {
+        log.Fatal("Do some error handling")
     }
     
     sn.Track(eventOptions)
@@ -175,23 +197,29 @@ func main() {
 package main
 
 import (
-	"github.com/securenative/securenative-go/securenative"
-    . "github.com/securenative/securenative-go/securenative/enums"
-    . "github.com/securenative/securenative-go/securenative/models"
+    "github.com/securenative/securenative-go/securenative"
+    "github.com/securenative/securenative-go/securenative/context"
+    "github.com/securenative/securenative-go/securenative/enums"
+    "github.com/securenative/securenative-go/securenative/events"
+    "github.com/securenative/securenative-go/securenative/models"
+    "log"
 )
 
 func main() {
-    sn := securenative.GetInstance()
-    contextBuilder := securenative.GetContextBuilder()
-    eventOptionsBuilder := sn.GetEventOptionsBuilder(EventTypes.LogIn)
-    
-    defer sn.ReleaseSDK()
-    
-    context := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(context).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
-    
+    sn, err := securenative.GetInstance()
     if err != nil {
-        // Do some error handling
+        log.Fatal("Do some error handling")
+    }
+
+    contextBuilder := context.NewSecureNativeContextBuilder()
+    eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn)
+    
+    defer sn.Stop()
+    
+    c := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string][]string{"user-agent": {"Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}}).Build()
+    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(c).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
+    if err != nil {
+        log.Fatal("Do some error handling")
     }
         
     verifyResult := sn.Verify(eventOptions)
@@ -210,12 +238,16 @@ package demo
 
 import (
     "github.com/securenative/securenative-go/securenative"
+    "log"
     "net/http"
 )
 
-func WebhookEndpoint(request *http.Request) bool {
-    sn := securenative.GetInstance()
-    defer sn.ReleaseSDK()
+func VerifyWebHook(request *http.Request) bool {
+    sn, err := securenative.GetInstance()
+    if err != nil {
+        log.Fatal("Do some error handling")
+    }
+    defer sn.Stop()
     
     return sn.VerifyRequestPayload(request)
 }
