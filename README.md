@@ -62,7 +62,7 @@ package main
 
 import (
 	"github.com/securenative/securenative-go/sdk"
-    "log"
+	"log"
 )
 
 func main() {
@@ -103,7 +103,7 @@ package main
 
 import (
 	"github.com/securenative/securenative-go/sdk"
-    "log"
+	"log"
 )
 
 func main() {
