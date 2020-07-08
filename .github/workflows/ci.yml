@@ -14,17 +14,6 @@ jobs:
         go-version: [1.12.x]
     runs-on: ubuntu-latest
     steps:
-      - name: Notify slack success
-        if: success()
-        id: slack # IMPORTANT: reference this step ID value in future Slack steps
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1.1.1
-        with:
-          channel: github-actions
-          status: STARTING
-          color: warning
-
       - name: Install Go
         uses: actions/setup-go@v2
         with:
