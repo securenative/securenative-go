@@ -61,8 +61,8 @@ func main() {
 package main
 
 import (
-	"github.com/securenative/securenative-go/sdk"
-	"log"
+    "github.com/securenative/securenative-go/sdk"
+    "log"
 )
 
 func main() {
@@ -102,8 +102,8 @@ Once initialized, sdk will create a singleton instance which you can get:
 package main
 
 import (
-	"github.com/securenative/securenative-go/sdk"
-	"log"
+    "github.com/securenative/securenative-go/sdk"
+    "log"
 )
 
 func main() {
@@ -224,7 +224,7 @@ func main() {
         
     verifyResult := sn.Verify(eventOptions)
     verifyResult.RiskLevel  // Low, Medium, High
-    verifyResult.Score  // Risk score: 0 -1 (0 - Very Low, 1 - Very High)
+    verifyResult.Score  // Risk score: 0 - 1 (0 - Very Low, 1 - Very High)
     verifyResult.Triggers  // ["TOR", "New IP", "New City"]
 }
 ```
