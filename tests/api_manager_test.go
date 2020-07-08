@@ -79,31 +79,31 @@ func TestSecureNativeInvalidOptionsError(t *testing.T) {
 	}
 }
 
-func TestVerifyEvent(t *testing.T) {
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
-
-	secureNativeOptions := getSecureNativeOptions()
-	eventOptions := getEventOptions()
-
-	body := "{\"riskLevel\": \"medium\", \"score\": 0.32, \"triggers\": [\"New IP\", \"New City\"]}"
-
-	httpmock.RegisterResponder("POST", "https://api.securenative-stg.com/collector/api/v1/verify", httpmock.NewStringResponder(200, body))
-
-	expected := &models.VerifyResult{
-		RiskLevel: enums.RiskLevel.Medium,
-		Score:     0.32,
-		Triggers:  []string{"New IP", "New City"},
-	}
-
-	eventManager := events.NewEventManager(secureNativeOptions, nil)
-	eventManager.StartEventPersist()
-	defer eventManager.StopEventPersist()
-	apiManager := events.NewApiManager(eventManager, secureNativeOptions)
-
-	result := apiManager.Verify(eventOptions)
-
-	if result.RiskLevel != expected.RiskLevel && result.Score != expected.Score {
-		t.Errorf("Test Failed: expected to recieve verify event: %v, got: %v", expected, result)
-	}
-}
+//func TestVerifyEvent(t *testing.T) {
+//	httpmock.Activate()
+//	defer httpmock.DeactivateAndReset()
+//
+//	secureNativeOptions := getSecureNativeOptions()
+//	eventOptions := getEventOptions()
+//
+//	body := "{\"riskLevel\": \"medium\", \"score\": 0.32, \"triggers\": [\"New IP\", \"New City\"]}"
+//
+//	httpmock.RegisterResponder("POST", "https://api.securenative-stg.com/collector/api/v1/verify", httpmock.NewStringResponder(200, body))
+//
+//	expected := &models.VerifyResult{
+//		RiskLevel: enums.RiskLevel.Medium,
+//		Score:     0.32,
+//		Triggers:  []string{"New IP", "New City"},
+//	}
+//
+//	eventManager := events.NewEventManager(secureNativeOptions, nil)
+//	eventManager.StartEventPersist()
+//	defer eventManager.StopEventPersist()
+//	apiManager := events.NewApiManager(eventManager, secureNativeOptions)
+//
+//	result := apiManager.Verify(eventOptions)
+//
+//	if result.RiskLevel != expected.RiskLevel && result.Score != expected.Score {
+//		t.Errorf("Test Failed: expected to recieve verify event: %v, got: %v", expected, result)
+//	}
+//}
