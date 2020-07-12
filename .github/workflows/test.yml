@@ -21,8 +21,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Test
         run: go test -v ./tests
-      - name: Upload report
-        run: bash <(curl -s https://codecov.io/bash)
 
       - name: Notify slack success
         if: success()
