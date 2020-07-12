@@ -20,7 +20,7 @@ func TestGetSdkInstanceWithoutInitThrows(t *testing.T) {
 func TestInitSdkWithoutApiKeyShouldThrow(t *testing.T) {
 	sdk.Flush()
 
-	_, err := sdk.InitSDK("")
+	_, err := sdk.InitSDK(config.SecureNativeOptions{})
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKError error to be thrown")
 	}
@@ -29,7 +29,7 @@ func TestInitSdkWithoutApiKeyShouldThrow(t *testing.T) {
 func TestInitDdkWithEmptyApiKeyShouldThrow(t *testing.T) {
 	sdk.Flush()
 
-	_, err := sdk.InitSDK("")
+	_, err := sdk.InitSDK(config.SecureNativeOptions{})
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKError error to be thrown")
 	}
@@ -39,7 +39,7 @@ func TestInitSdkWithApiKeyAndDefaults(t *testing.T) {
 	sdk.Flush()
 
 	apiKey := "SomeApiKey"
-	s, err := sdk.InitSDKWithApiKey(apiKey)
+	s, err := sdk.InitSDK(sdk.WithApiKey(apiKey))
 
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
@@ -79,8 +79,8 @@ func TestInitSdkTwiceWillThrow(t *testing.T) {
 	sdk.Flush()
 
 	apiKey := "SomeApiKey"
-	_, err := sdk.InitSDKWithApiKey(apiKey)
-	_, err = sdk.InitSDKWithApiKey(apiKey)
+	_, err := sdk.InitSDK(sdk.WithApiKey(apiKey))
+	_, err = sdk.InitSDK(sdk.WithApiKey(apiKey))
 
 	if err == nil {
 		t.Error("Test Failed: expected SecureNativeSDKError error to be thrown")
@@ -91,7 +91,7 @@ func TestInitSdkWithApiKeyAndGetInstance(t *testing.T) {
 	sdk.Flush()
 
 	apiKey := "SomeApiKey"
-	s, err := sdk.InitSDKWithApiKey(apiKey)
+	s, err := sdk.InitSDK(sdk.WithApiKey(apiKey))
 
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
@@ -115,7 +115,7 @@ func TestInitSdkWithBuilder(t *testing.T) {
 		WithInterval(10).
 		WithApiUrl(apiUrl).Build()
 
-	s, err := sdk.InitSDKWithOptions(options)
+	s, err := sdk.InitSDK(sdk.WithOptions(options))
 	if err != nil {
 		t.Errorf("Test Failed: expected clean init; got error: %s", err)
 	}

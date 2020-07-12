@@ -47,7 +47,7 @@ import (
 )
 
 func main() {
-    sn, err :=  sdk.InitSDK("path/to/securenative.yml") // For default config use `sdk.InitSDK("")`
+    sn, err :=  sdk.InitSDK(sdk.WithConfigFile("path/to/securenative.yml"))
     if err != nil || sn == nil {
          log.Fatal("Do some error handling")
     }
@@ -66,7 +66,7 @@ import (
 )
 
 func main() {
-    sn, err :=  sdk.InitSDKWithApiKey("YOUR_API_KEY")
+    sn, err :=  sdk.InitSDK(sdk.WithApiKey("YOUR_API_KEY"))
     if err != nil {
          log.Fatal("Do some error handling")
     }
@@ -87,7 +87,7 @@ import (
 
 func main() {
     configBuilder := config.NewConfigurationBuilder()
-    sn, err := sdk.InitSDKWithOptions(configBuilder.WithApiKey("API_KEY").WithMaxEvents(10).WithLogLevel("ERROR").Build())
+    sn, err := sdk.InitSDK(configBuilder.WithApiKey("API_KEY").WithMaxEvents(10).WithLogLevel("ERROR").Build())
     if err != nil {
          log.Fatal("Do some error handling")
     }

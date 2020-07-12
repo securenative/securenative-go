@@ -45,52 +45,12 @@ func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) 
 	return secureNative, nil
 }
 
-func InitSDK(confPath string) (*SecureNative, error) {
-	if secureNative != nil {
-		return secureNative, &errors.SecureNativeSDKError{Msg: "This SDK was already initialized"}
-	}
-
-	configManager := config.NewConfigurationManager()
-	options := configManager.LoadConfig(confPath)
-	sn, err := newSecureNative(options)
-
-	if err != nil {
-		return nil, err
-	}
-
-	secureNative = sn
-	return sn, nil
-}
-
-func InitSDKWithOptions(options config.SecureNativeOptions) (*SecureNative, error) {
+func InitSDK(options config.SecureNativeOptions) (*SecureNative, error) {
 	if secureNative != nil {
 		return secureNative, &errors.SecureNativeSDKError{Msg: "This SDK was already initialized"}
 	}
 
 	sn, err := newSecureNative(options)
-
-	if err != nil {
-		return nil, err
-	}
-
-	secureNative = sn
-	return sn, nil
-}
-
-func InitSDKWithApiKey(apiKey string) (*SecureNative, error) {
-	if secureNative != nil {
-		return secureNative, &errors.SecureNativeSDKError{Msg: "This SDK was already initialized"}
-	}
-
-	u := utils.Utils{}
-	if u.IsNilOrEmpty(apiKey) {
-		return nil, &errors.SecureNativeConfigError{Msg: "You must pass your SecureNative api key"}
-	}
-
-	configBuilder := config.NewConfigurationBuilder()
-	options := configBuilder.WithApiKey(apiKey).Build()
-	sn, err := newSecureNative(options)
-
 	if err != nil {
 		return nil, err
 	}
