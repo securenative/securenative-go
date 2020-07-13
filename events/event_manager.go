@@ -139,19 +139,20 @@ func (e *EventManager) flush() {
 	}
 }
 
-func (e *EventManager) run() (map[string]interface{}, error) {
+func (e *EventManager) run() {
 	for true {
 		if len(e.Queue) > 0 && e.SendEnabled {
-			for _, item := range e.Queue {
+			for i, item := range e.Queue {
 				res := e.HttpClient.Post(item.Url, item.Body)
+				e.Queue = removeItem(e.Queue, i)
 				if res.StatusCode == 401 {
 					item.Retry = false
 				} else if res.StatusCode != 200 {
-					return nil, &errors.SecureNativeHttpError{Msg: fmt.Sprintf("Failed to post event; status code: %d", res.StatusCode)}
+					item.Retry = true
 				}
 
 				logger.Debug(fmt.Sprintf("Event successfully sent; %s", item.Body))
-				resBody, err := readBody(res)
+				_, err := readBody(res)
 				if err != nil {
 					logger.Error(fmt.Sprintf("Failed to send event; %s", err))
 					if item.Retry {
@@ -166,12 +167,10 @@ func (e *EventManager) run() (map[string]interface{}, error) {
 						e.SendEnabled = true
 					}
 				}
-				return resBody, nil
 			}
 		}
 		time.Sleep(time.Duration(e.Interval / 1000))
 	}
-	return nil, nil
 }
 
 func (e *EventManager) serialize(event models.SDKEvent) models.EventInput {
@@ -224,4 +223,8 @@ func readBody(response *http.Response) (map[string]interface{}, error) {
 	}
 
 	return resBody, nil
+}
+
+func removeItem(s []QueueItem, index int) []QueueItem {
+	return append(s[:index], s[index+1:]...)
 }
