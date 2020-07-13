@@ -1,7 +1,7 @@
 package models
 
 type UserTraits struct {
-	Name      string
-	Email     string
-	CreatedAt string
+	Name      string	`json:"name"`
+	Email     string	`json:"email"`
+	CreatedAt string	`json:"createdAt"`
 }

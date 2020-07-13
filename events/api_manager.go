@@ -40,7 +40,7 @@ func (m *ApiManager) Verify(eventOptions models.EventOptions) *models.VerifyResu
 	event := models.NewSDKEvent(eventOptions, m.Options)
 
 	res, err := m.EventManager.SendSync(event, enums.ApiRoute.Verify, false)
-	if err != nil {
+	if err != nil || res == nil {
 		logger.Debug(fmt.Sprintf("Failed to call verify; %s", err))
 		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {
 			return &models.VerifyResult{RiskLevel: enums.RiskLevel.Low, Score: 0, Triggers: nil}

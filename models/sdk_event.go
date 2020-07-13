@@ -15,7 +15,7 @@ type SDKEvent struct {
 	UserTraits UserTraits
 	Request    *RequestContext
 	Timestamp  string
-	Properties map[string]string
+	Properties map[string]interface{}
 }
 
 func NewSDKEvent(eventOptions EventOptions, secureNativeOptions config.SecureNativeOptions) SDKEvent {
@@ -25,9 +25,9 @@ func NewSDKEvent(eventOptions EventOptions, secureNativeOptions config.SecureNat
 	contextBuilder := context.NewSecureNativeContextBuilder()
 
 	if eventOptions.Context == nil {
-		event.Context = eventOptions.Context
-	} else {
 		event.Context = contextBuilder.Build()
+	} else {
+		event.Context = eventOptions.Context
 	}
 
 	clientToken := encryptionUtils.Decrypt(event.Context.ClientToken, secureNativeOptions.ApiKey)

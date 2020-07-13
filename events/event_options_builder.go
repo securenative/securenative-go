@@ -41,7 +41,7 @@ func (e *EventOptionsBuilder) WithContext(context *context.SecureNativeContext) 
 	return e
 }
 
-func (e *EventOptionsBuilder) WithProperties(properties map[string]string) *EventOptionsBuilder {
+func (e *EventOptionsBuilder) WithProperties(properties map[string]interface{}) *EventOptionsBuilder {
 	e.EventOptions.Properties = properties
 	return e
 }

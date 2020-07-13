@@ -17,7 +17,7 @@ func getOptions() models.SDKEvent {
 		UserTraits: models.UserTraits{Name: "Some User", Email: "email@securenative.com"},
 		Request:    &models.RequestContext{},
 		Timestamp:  time.Now().Format("2006-01-02T15:04:05Z"),
-		Properties: map[string]string{},
+		Properties: map[string]interface{}{},
 	}
 }
 

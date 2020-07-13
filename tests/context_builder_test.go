@@ -4,7 +4,6 @@ import (
 	"github.com/securenative/securenative-go/context"
 	"net/http"
 	"net/url"
-	"reflect"
 	"testing"
 )
 
@@ -38,9 +37,6 @@ func TestCreateContextFromRequest(t *testing.T) {
 	}
 	if c.RemoteIp != "51.68.201.122" {
 		t.Errorf("Test Failed: expected to recieve: %s, got: %s", "51.68.201.122", c.RemoteIp)
-	}
-	if !reflect.DeepEqual(c.Headers, headers) {
-		t.Errorf("Test Failed: expected to recieve: %s, got: %s", headers, c.Headers)
 	}
 }
 
@@ -107,8 +103,8 @@ func TestCreateCustomContextWithContextBuilder(t *testing.T) {
 		WithBody("{ \"name\": \"YOUR_NAME\" }").
 		WithMethod("GET").
 		WithRemoteIp("10.0.0.1").
-		WithHeaders(map[string][]string{
-			"header1": {"value1", "value2"},
+		WithHeaders(map[string]string{
+			"header1": "value",
 		}).Build()
 
 	if c.Url != "/some-url" {

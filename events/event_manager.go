@@ -108,6 +108,7 @@ func (e *EventManager) SendSync(event models.SDKEvent, path string, retry bool) 
 			Retry: retry,
 		}
 		e.Queue = append(e.Queue, item)
+		return nil, fmt.Errorf("failed to send event; %d; %s", res.StatusCode, res.Status)
 	}
 
 	return readBody(res)
@@ -139,8 +140,8 @@ func (e *EventManager) flush() {
 }
 
 func (e *EventManager) run() (map[string]interface{}, error) {
-	for e.SendEnabled {
-		if len(e.Queue) > 0 {
+	for true {
+		if len(e.Queue) > 0 && e.SendEnabled {
 			for _, item := range e.Queue {
 				res := e.HttpClient.Post(item.Url, item.Body)
 				if res.StatusCode == 401 {
@@ -173,30 +174,36 @@ func (e *EventManager) run() (map[string]interface{}, error) {
 	return nil, nil
 }
 
-func (e *EventManager) serialize(event models.SDKEvent) map[string]interface{} {
-	serialized := map[string]interface{}{
-		"rid":       event.Rid,
-		"eventType": event.EventType,
-		"userId":    event.UserId,
-		"userTraits": map[string]interface{}{
-			"name":      event.UserTraits.Name,
-			"email":     event.UserTraits.Email,
-			"createdAt": event.UserTraits.CreatedAt,
-		},
-		"request": map[string]interface{}{
-			"cid":      event.Request.Cid,
-			"vid":      event.Request.Vid,
-			"fp":       event.Request.Fp,
-			"ip":       event.Request.Ip,
-			"remoteIp": event.Request.RemoteIp,
-			"method":   event.Request.Method,
-			"url":      event.Request.Url,
-			"headers":  event.Request.Headers,
-		},
-		"timestamp":  event.Timestamp,
-		"properties": event.Properties,
+func (e *EventManager) serialize(event models.SDKEvent) models.EventInput {
+	dateUtils := utils.NewDateUtils()
+	createdAt := dateUtils.ToTimestamp("")
+	if len(event.UserTraits.CreatedAt) != 0 {
+		createdAt = event.UserTraits.CreatedAt
 	}
 
+	serialized := models.EventInput{
+		RequestID: event.Rid,
+		EventType: event.EventType,
+		UserID:    event.UserId,
+		UserTraits: models.UserTraits{
+			Name:      event.UserTraits.Name,
+			Email:     event.UserTraits.Email,
+			CreatedAt: createdAt,
+		},
+		Request: models.RequestContext{
+			Cid:         event.Request.Cid,
+			Vid:         event.Request.Vid,
+			Fp:          event.Request.Fp,
+			Ip:          event.Request.Ip,
+			RemoteIp:    event.Request.RemoteIp,
+			Headers:     event.Request.Headers,
+			Url:         event.Request.Url,
+			Method:      event.Request.Method,
+			ClientToken: event.Request.ClientToken,
+		},
+		Properties: event.Properties,
+		Timestamp:  event.Timestamp,
+	}
 	return serialized
 }
 

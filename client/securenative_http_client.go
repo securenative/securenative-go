@@ -11,7 +11,7 @@ import (
 const AuthorizationHeader = "Authorization"
 const VersionHeader = "SN-Version"
 const UserAgentHeader = "User-Agent"
-const UserAgentHeaderValue = "SecureNative-python"
+const UserAgentHeaderValue = "SecureNative-go"
 const ContentTypeHeader = "Content-Type"
 const ContentTypeHeaderValue = "application/json"
 

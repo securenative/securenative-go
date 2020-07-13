@@ -9,6 +9,6 @@ type EventOptions struct {
 	UserId     string
 	UserTraits UserTraits
 	Context    *context.SecureNativeContext
-	Properties map[string]string
+	Properties map[string]interface{}
 	Timestamp  string
 }

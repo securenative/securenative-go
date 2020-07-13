@@ -65,7 +65,7 @@ func (c *SecureNativeContextBuilder) WithRemoteIp(remoteIp string) *SecureNative
 	return c
 }
 
-func (c *SecureNativeContextBuilder) WithHeaders(headers map[string][]string) *SecureNativeContextBuilder {
+func (c *SecureNativeContextBuilder) WithHeaders(headers map[string]string) *SecureNativeContextBuilder {
 	c.Context.Headers = headers
 	return c
 }
@@ -89,10 +89,10 @@ func (c *SecureNativeContextBuilder) Build() *SecureNativeContext {
 	return c.Context
 }
 
-func parseHeaders(request *http.Request) map[string][]string {
-	headers := map[string][]string{}
+func parseHeaders(request *http.Request) map[string]string {
+	headers := map[string]string{}
 	for name, values := range request.Header {
-		headers[name] = values
+		headers[name] = values[0]
 	}
 
 	return headers

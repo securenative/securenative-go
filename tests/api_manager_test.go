@@ -16,8 +16,8 @@ func getContext() *context.SecureNativeContext {
 
 	return contextBuilder.WithIp("127.0.0.1").
 		WithClientToken("SECURED_CLIENT_TOKEN").
-		WithHeaders(map[string][]string{
-			"user-agent": {"Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}}).Build()
+		WithHeaders(map[string]string{
+			"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
 }
 
 func getEventOptions() models.EventOptions {
@@ -29,9 +29,7 @@ func getEventOptions() models.EventOptions {
 			Email: "USER_EMAIL",
 		}).
 		WithContext(getContext()).
-		WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE",
-			"prop2": "true",
-			"prop3": "3"}).Build()
+		WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": true, "prop3": 3}).Build()
 
 	return options
 }
@@ -68,9 +66,9 @@ func TestTrackEvent(t *testing.T) {
 
 func TestSecureNativeInvalidOptionsError(t *testing.T) {
 	eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn)
-	properties := map[string]string{}
+	properties := map[string]interface{}{}
 	for i := 1; i <= 12; i++ {
-		properties[strconv.Itoa(i)] = strconv.Itoa(i)
+		properties[strconv.Itoa(i)] = i
 	}
 	_, err := eventOptionsBuilder.WithProperties(properties).Build()
 
@@ -78,4 +76,3 @@ func TestSecureNativeInvalidOptionsError(t *testing.T) {
 		t.Error("Test Failed: expected SecureNativeInvalidOptionsError error to be thrown")
 	}
 }
-
