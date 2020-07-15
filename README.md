@@ -144,8 +144,8 @@ func main() {
     
     defer sn.Stop()
     
-    c := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string][]string{"user-agent": {"Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}}).Build()
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(c).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
+    c := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
+    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"}).WithContext(c).WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
     if err != nil {
         log.Fatal("Do some error handling")
     }
@@ -180,7 +180,7 @@ func Track(request *http.Request) {
 
     defer sn.Stop()
     
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(c).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
+    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"}).WithContext(c).WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
     if err != nil {
         log.Fatal("Do some error handling")
     }
@@ -216,8 +216,8 @@ func main() {
     
     defer sn.Stop()
     
-    c := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string][]string{"user-agent": {"Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}}).Build()
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com"}).WithContext(c).WithProperties(map[string]string{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
+    c := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
+    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"}).WithContext(c).WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
     if err != nil {
         log.Fatal("Do some error handling")
     }

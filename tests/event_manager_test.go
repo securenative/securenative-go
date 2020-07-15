@@ -14,7 +14,7 @@ func getOptions() models.SDKEvent {
 		Rid:        "1",
 		EventType:  "sn.user.login",
 		UserId:     "1",
-		UserTraits: models.UserTraits{Name: "Some User", Email: "email@securenative.com"},
+		UserTraits: models.UserTraits{Name: "Some User", Email: "email@securenative.com", Phone: "+12012673412"},
 		Request:    &models.RequestContext{},
 		Timestamp:  time.Now().Format("2006-01-02T15:04:05Z"),
 		Properties: map[string]interface{}{},

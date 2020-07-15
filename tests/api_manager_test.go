@@ -27,6 +27,7 @@ func getEventOptions() models.EventOptions {
 		WithUserTraits(models.UserTraits{
 			Name:  "USER_NAME",
 			Email: "USER_EMAIL",
+			Phone: "+12012673412",
 		}).
 		WithContext(getContext()).
 		WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": true, "prop3": 3}).Build()

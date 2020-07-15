@@ -187,6 +187,7 @@ func (e *EventManager) serialize(event models.SDKEvent) models.EventInput {
 		UserTraits: models.UserTraits{
 			Name:      event.UserTraits.Name,
 			Email:     event.UserTraits.Email,
+			Phone:     event.UserTraits.Phone,
 			CreatedAt: createdAt,
 		},
 		Request: models.RequestContext{
