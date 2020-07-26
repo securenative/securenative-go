@@ -1,5 +1,7 @@
 package config
 
+import "github.com/securenative/securenative-go/enums"
+
 type SecureNativeOptions struct {
 	ApiKey           string `yaml:"SECURENATIVE_API_KEY"`
 	ApiUrl           string `yaml:"SECURENATIVE_API_URL"`
@@ -10,4 +12,18 @@ type SecureNativeOptions struct {
 	Disable          bool   `yaml:"SECURENATIVE_DISABLE"`
 	LogLevel         string `yaml:"SECURENATIVE_LOG_LEVEL"`
 	FailOverStrategy string `yaml:"SECURENATIVE_FAILOVER_STRATEGY"`
+}
+
+func DefaultSecureNativeOptions() SecureNativeOptions {
+	return SecureNativeOptions{
+		ApiKey:           "",
+		ApiUrl:           "https://api.securenative.com/collector/api/v1",
+		Interval:         1000,
+		MaxEvents:        1000,
+		Timeout:          1500,
+		AutoSend:         true,
+		Disable:          false,
+		LogLevel:         "CRITICAL",
+		FailOverStrategy: enums.FailOverStrategy.FailOpen,
+	}
 }

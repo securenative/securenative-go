@@ -22,8 +22,7 @@ func NewConfigurationManager() *ConfigurationManager {
 }
 
 func (c *ConfigurationManager) LoadConfig(configPath string) SecureNativeOptions {
-	configurationBuilder := NewConfigurationBuilder()
-	options := configurationBuilder.DefaultSecureNativeOptions()
+	options := DefaultSecureNativeOptions()
 
 	resourcePath := DefaultConfigFile
 	if len(configPath) > 1 && configPath != "" {
@@ -35,16 +34,17 @@ func (c *ConfigurationManager) LoadConfig(configPath string) SecureNativeOptions
 
 	properties := c.readResourceFile(resourcePath)
 
-	return configurationBuilder.
-		WithApiKey(c.getStringEnvOrDefault(properties, "SECURENATIVE_API_KEY", options.ApiKey)).
-		WithApiUrl(c.getStringEnvOrDefault(properties, "SECURENATIVE_API_URL", options.ApiUrl)).
-		WithInterval(c.getIntEnvOrDefault(properties, "SECURENATIVE_INTERVAL", options.Interval)).
-		WithMaxEvents(c.getIntEnvOrDefault(properties, "SECURENATIVE_MAX_EVENTS", options.MaxEvents)).
-		WithTimeout(c.getIntEnvOrDefault(properties, "SECURENATIVE_TIMEOUT", options.Timeout)).
-		WithAutoSend(c.getBoolEnvOrDefault(properties, "SECURENATIVE_AUTO_SEND", options.AutoSend)).
-		WithDisable(c.getBoolEnvOrDefault(properties, "SECURENATIVE_DISABLE", options.Disable)).
-		WithLogLevel(c.getStringEnvOrDefault(properties, "SECURENATIVE_LOG_LEVEL", options.LogLevel)).
-		WithFailOverStrategy(c.getStringEnvOrDefault(properties, "SECURENATIVE_FAILOVER_STRATEGY", options.FailOverStrategy)).Build()
+	return SecureNativeOptions{
+		ApiKey:           c.getStringEnvOrDefault(properties, "SECURENATIVE_API_KEY", options.ApiKey),
+		ApiUrl:           c.getStringEnvOrDefault(properties, "SECURENATIVE_API_URL", options.ApiUrl),
+		Interval:         c.getIntEnvOrDefault(properties, "SECURENATIVE_INTERVAL", options.Interval),
+		MaxEvents:        c.getIntEnvOrDefault(properties, "SECURENATIVE_MAX_EVENTS", options.MaxEvents),
+		Timeout:          c.getIntEnvOrDefault(properties, "SECURENATIVE_TIMEOUT", options.Timeout),
+		AutoSend:         c.getBoolEnvOrDefault(properties, "SECURENATIVE_AUTO_SEND", options.AutoSend),
+		Disable:          c.getBoolEnvOrDefault(properties, "SECURENATIVE_DISABLE", options.Disable),
+		LogLevel:         c.getStringEnvOrDefault(properties, "SECURENATIVE_LOG_LEVEL", options.LogLevel),
+		FailOverStrategy: c.getStringEnvOrDefault(properties, "SECURENATIVE_FAILOVER_STRATEGY", options.FailOverStrategy),
+	}
 }
 
 func (c *ConfigurationManager) readResourceFile(path string) map[string]string {

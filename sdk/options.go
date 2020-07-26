@@ -3,8 +3,8 @@ package sdk
 import "github.com/securenative/securenative-go/config"
 
 func WithApiKey(apiKey string) config.SecureNativeOptions {
-	configBuilder := config.NewConfigurationBuilder()
-	options := configBuilder.WithApiKey(apiKey).Build()
+	options := config.DefaultSecureNativeOptions()
+	options.ApiKey = apiKey
 	return options
 }
 func WithOptions(options config.SecureNativeOptions) config.SecureNativeOptions {

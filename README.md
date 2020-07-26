@@ -86,8 +86,11 @@ import (
 )
 
 func main() {
-    configBuilder := config.NewConfigurationBuilder()
-    sn, err := sdk.InitSDK(configBuilder.WithApiKey("API_KEY").WithMaxEvents(10).WithLogLevel("ERROR").Build())
+    options := config.DefaultSecureNativeOptions()
+    options.ApiKey = "API_KEY"
+    options.MaxEvents = 10
+    options.LogLevel = "ERROR"
+    sn, err := sdk.InitSDK(options)
     if err != nil {
          log.Fatal("Do some error handling")
     }
@@ -139,12 +142,15 @@ func main() {
             log.Fatal("Do some error handling")
     }
 
-    contextBuilder := context.NewSecureNativeContextBuilder()
+    c := &context.SecureNativeContext{
+        ClientToken:    "SECURED_CLIENT_TOKEN",
+        Ip:             "127.0.0.1",
+        Headers:        map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"},
+    }
     eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn)
     
     defer sn.Stop()
     
-    c := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
     eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"}).WithContext(c).WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
     if err != nil {
         log.Fatal("Do some error handling")
@@ -174,9 +180,9 @@ func Track(request *http.Request) {
     if err != nil {
         log.Fatal("Do some error handling")
     }
-    contextBuilder := context.NewSecureNativeContextBuilder()
+
     eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn) 
-    c := contextBuilder.FromHttpRequest(request)
+    c := context.FromHttpRequest(request)
 
     defer sn.Stop()
     
@@ -210,13 +216,16 @@ func main() {
     if err != nil {
         log.Fatal("Do some error handling")
     }
-
-    contextBuilder := context.NewSecureNativeContextBuilder()
-    eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn)
+    
+    eventOptionsBuilder := models.EventOptions{Event:enums.EventTypes.LogIn}
     
     defer sn.Stop()
     
-    c := contextBuilder.WithIp("127.0.0.1").WithClientToken("SECURED_CLIENT_TOKEN").WithHeaders(map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
+    c := &context.SecureNativeContext{
+            ClientToken:    "SECURED_CLIENT_TOKEN",
+            Ip:             "127.0.0.1",
+            Headers:        map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"},
+    }
     eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"}).WithContext(c).WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
     if err != nil {
         log.Fatal("Do some error handling")

@@ -108,12 +108,11 @@ func TestInitSdkWithBuilder(t *testing.T) {
 
 	apiKey := "SomeApiKey"
 	apiUrl := "SomeApiUrl"
-	configBuilder := config.NewConfigurationBuilder()
-	options := configBuilder.
-		WithApiKey(apiKey).
-		WithAutoSend(false).
-		WithInterval(10).
-		WithApiUrl(apiUrl).Build()
+	options := config.DefaultSecureNativeOptions()
+	options.ApiKey = apiKey
+	options.AutoSend = false
+	options.Interval = 10
+	options.ApiUrl = apiUrl
 
 	s, err := sdk.InitSDK(sdk.WithOptions(options))
 	if err != nil {

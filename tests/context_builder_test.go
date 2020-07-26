@@ -25,7 +25,7 @@ func TestCreateContextFromRequest(t *testing.T) {
 		RequestURI: "/login/param1=value1&param2=value2",
 	}
 
-	c := context.NewSecureNativeContextBuilder().FromHttpRequest(request)
+	c := context.FromHttpRequest(request)
 	if c.ClientToken != clientToken {
 		t.Errorf("Test Failed: expected to recieve: %s, got: %s", clientToken, c.ClientToken)
 	}
@@ -57,7 +57,7 @@ func TestCreateContextFromRequestWithCookie(t *testing.T) {
 	}
 	request.AddCookie(cookie)
 
-	c := context.NewSecureNativeContextBuilder().FromHttpRequest(request)
+	c := context.FromHttpRequest(request)
 	if c.ClientToken != clientToken {
 		t.Errorf("Test Failed: expected to recieve: %s, got: %s", clientToken, c.ClientToken)
 	}
@@ -73,7 +73,7 @@ func TestCreateContextFromRequestWithCookie(t *testing.T) {
 }
 
 func TestCreateDefaultContextBuilder(t *testing.T) {
-	c := context.NewSecureNativeContextBuilder().Build()
+	c := context.SecureNativeContext{}
 
 	if c.Url != "" {
 		t.Errorf("Test Failed: expected to recieve an empty field, got: %s", c.Url)
@@ -96,16 +96,17 @@ func TestCreateDefaultContextBuilder(t *testing.T) {
 }
 
 func TestCreateCustomContextWithContextBuilder(t *testing.T) {
-	c := context.NewSecureNativeContextBuilder().
-		WithUrl("/some-url").
-		WithClientToken("SECRET_TOKEN").
-		WithIp("10.0.0.0").
-		WithBody("{ \"name\": \"YOUR_NAME\" }").
-		WithMethod("GET").
-		WithRemoteIp("10.0.0.1").
-		WithHeaders(map[string]string{
+	c := context.SecureNativeContext{
+		ClientToken: "SECRET_TOKEN",
+		Ip:          "10.0.0.0",
+		RemoteIp:    "10.0.0.1",
+		Headers: map[string]string{
 			"header1": "value",
-		}).Build()
+		},
+		Url:    "/some-url",
+		Method: "GET",
+		Body:   "{ \"name\": \"YOUR_NAME\" }",
+	}
 
 	if c.Url != "/some-url" {
 		t.Errorf("Test Failed: expected to recieve: %s, got: %s", "/some-url", c.Url)

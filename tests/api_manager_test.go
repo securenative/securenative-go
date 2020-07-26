@@ -4,44 +4,40 @@ import (
 	"github.com/jarcoal/httpmock"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/context"
-	"github.com/securenative/securenative-go/enums"
 	"github.com/securenative/securenative-go/events"
 	"github.com/securenative/securenative-go/models"
-	"strconv"
 	"testing"
 )
 
 func getContext() *context.SecureNativeContext {
-	contextBuilder := context.NewSecureNativeContextBuilder()
-
-	return contextBuilder.WithIp("127.0.0.1").
-		WithClientToken("SECURED_CLIENT_TOKEN").
-		WithHeaders(map[string]string{
-			"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"}).Build()
+	return &context.SecureNativeContext{
+		ClientToken: "SECURED_CLIENT_TOKEN",
+		Ip:          "127.0.0.1",
+		Headers: map[string]string{
+			"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"},
+	}
 }
 
 func getEventOptions() models.EventOptions {
-	eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn)
-	options, _ := eventOptionsBuilder.
-		WithUserId("USER_ID").
-		WithUserTraits(models.UserTraits{
+	return models.EventOptions{
+		UserId: "USER_ID",
+		UserTraits: models.UserTraits{
 			Name:  "USER_NAME",
 			Email: "USER_EMAIL",
 			Phone: "+12012673412",
-		}).
-		WithContext(getContext()).
-		WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": true, "prop3": 3}).Build()
-
-	return options
+		},
+		Context:    getContext(),
+		Properties: map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": true, "prop3": 3},
+	}
 }
 
 func getSecureNativeOptions() config.SecureNativeOptions {
-	configBuilder := config.NewConfigurationBuilder()
-	return configBuilder.
-		WithApiKey("YOUR_API_KEY").
-		WithAutoSend(true).
-		WithInterval(10).
-		WithApiUrl("https://api.securenative-stg.com/collector/api/v1").Build()
+	options := config.DefaultSecureNativeOptions()
+	options.ApiKey = "YOUR_API_KEY"
+	options.AutoSend = true
+	options.Interval = 10
+	options.ApiUrl = "https://api.securenative-stg.com/collector/api/v1"
+	return options
 }
 
 func TestTrackEvent(t *testing.T) {
@@ -62,18 +58,5 @@ func TestTrackEvent(t *testing.T) {
 
 	if len(result) < 1 {
 		t.Errorf("Test Failed: number of tracking post is: %d, expected: 1", len(result))
-	}
-}
-
-func TestSecureNativeInvalidOptionsError(t *testing.T) {
-	eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn)
-	properties := map[string]interface{}{}
-	for i := 1; i <= 12; i++ {
-		properties[strconv.Itoa(i)] = i
-	}
-	_, err := eventOptionsBuilder.WithProperties(properties).Build()
-
-	if err == nil {
-		t.Error("Test Failed: expected SecureNativeInvalidOptionsError error to be thrown")
 	}
 }
