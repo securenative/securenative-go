@@ -147,14 +147,15 @@ func main() {
         Ip:             "127.0.0.1",
         Headers:        map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"},
     }
-    eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn)
+    eventOptions := models.EventOptions{
+        Event: enums.EventTypes.LogIn,
+        UserId: "1234",
+        UserTraits: models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"},
+        Context: c,
+        Properties: map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"},    
+    }
     
     defer sn.Stop()
-    
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"}).WithContext(c).WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
-    if err != nil {
-        log.Fatal("Do some error handling")
-    }
     
     sn.Track(eventOptions)
 }
@@ -181,16 +182,15 @@ func Track(request *http.Request) {
         log.Fatal("Do some error handling")
     }
 
-    eventOptionsBuilder := events.NewEventOptionsBuilder(enums.EventTypes.LogIn) 
     c := context.FromHttpRequest(request)
+    eventOptions := models.EventOptions{
+        Event: enums.EventTypes.LogIn,
+        UserId: "1234",
+        Context: c,
+    }
 
     defer sn.Stop()
-    
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"}).WithContext(c).WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
-    if err != nil {
-        log.Fatal("Do some error handling")
-    }
-    
+      
     sn.Track(eventOptions)
 }
 ```
@@ -217,18 +217,13 @@ func main() {
         log.Fatal("Do some error handling")
     }
     
-    eventOptionsBuilder := models.EventOptions{Event:enums.EventTypes.LogIn}
-    
+    eventOptions := models.EventOptions{Event:enums.EventTypes.LogIn}
     defer sn.Stop()
     
     c := &context.SecureNativeContext{
             ClientToken:    "SECURED_CLIENT_TOKEN",
             Ip:             "127.0.0.1",
             Headers:        map[string]string{"user-agent": "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405"},
-    }
-    eventOptions, err := eventOptionsBuilder.WithUserId("1234").WithUserTraits(models.UserTraits{Name:"Your Name", Email:"name@gmail.com", Phone: "+1234567890"}).WithContext(c).WithProperties(map[string]interface{}{"prop1": "CUSTOM_PARAM_VALUE", "prop2": "true", "prop3": "3"}).Build()
-    if err != nil {
-        log.Fatal("Do some error handling")
     }
         
     verifyResult := sn.Verify(eventOptions)
