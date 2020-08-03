@@ -1,6 +1,6 @@
 package models
 
-type RiskResult struct {
+type VerifyResult struct {
 	RiskLevel string
 	Score     float64
 	Triggers  []string
