@@ -2,8 +2,6 @@ package utils
 
 import "net/http"
 
-const SecureNativeHeader = "x-securenative"
-
 type RequestUtils struct{}
 
 func NewRequestUtils() *RequestUtils {
@@ -11,7 +9,12 @@ func NewRequestUtils() *RequestUtils {
 }
 
 func (u *RequestUtils) GetSecureHeaderFromRequest(request *http.Request) string {
-	return string(request.Header.Get(SecureNativeHeader)[0])
+	header := request.Header["x-securenative"]
+	if len(header) >= 1 {
+		return header[0]
+	} else {
+		return ""
+	}
 }
 
 func (u *RequestUtils) GetClientIpFromRequest(request *http.Request) string {
