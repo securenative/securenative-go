@@ -175,7 +175,7 @@ func (e *EventManager) run() {
 
 func (e *EventManager) serialize(event models.SDKEvent) models.EventInput {
 	dateUtils := utils.NewDateUtils()
-	createdAt := dateUtils.ToTimestamp("")
+	createdAt := dateUtils.ToTimestamp(time.Now())
 	if len(event.UserTraits.CreatedAt) != 0 {
 		createdAt = event.UserTraits.CreatedAt
 	}

@@ -5,6 +5,7 @@ import (
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/context"
 	"github.com/securenative/securenative-go/utils"
+	"time"
 )
 
 type SDKEvent struct {
@@ -51,7 +52,12 @@ func NewSDKEvent(eventOptions EventOptions, secureNativeOptions config.SecureNat
 		Method:   event.Context.Method,
 	}
 
-	event.Timestamp = dateUtils.ToTimestamp(eventOptions.Timestamp)
+	t := time.Now()
+	if eventOptions.Timestamp != nil {
+		t = *eventOptions.Timestamp
+	}
+
+	event.Timestamp = dateUtils.ToTimestamp(t)
 	event.Properties = eventOptions.Properties
 
 	return event
