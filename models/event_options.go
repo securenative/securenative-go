@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/securenative/securenative-go/context"
+	"time"
 )
 
 type EventOptions struct {
@@ -10,5 +11,5 @@ type EventOptions struct {
 	UserTraits UserTraits
 	Context    *context.SecureNativeContext
 	Properties map[string]interface{}
-	Timestamp  string
+	Timestamp  *time.Time
 }
