@@ -4,6 +4,7 @@ import (
 	"github.com/nu7hatch/gouuid"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/context"
+	"github.com/securenative/securenative-go/errors"
 	"github.com/securenative/securenative-go/utils"
 	"time"
 )
@@ -19,7 +20,15 @@ type SDKEvent struct {
 	Properties map[string]interface{}
 }
 
-func NewSDKEvent(eventOptions EventOptions, secureNativeOptions config.SecureNativeOptions) SDKEvent {
+func NewSDKEvent(eventOptions EventOptions, secureNativeOptions config.SecureNativeOptions) (SDKEvent, error) {
+	if len(eventOptions.UserId) <= 0 || eventOptions.UserId == "" {
+		return SDKEvent{}, &errors.SecureNativeInvalidOptionsError{Msg: "Invalid event structure; User Id is missing"}
+	}
+
+	if len(eventOptions.Event) <= 0 || eventOptions.Event == "" {
+		return SDKEvent{}, &errors.SecureNativeInvalidOptionsError{Msg: "Invalid event structure; Event Type is missing"}
+	}
+
 	event := SDKEvent{}
 	dateUtils := utils.DateUtils{}
 	encryptionUtils := utils.EncryptionUtils{}
@@ -60,5 +69,5 @@ func NewSDKEvent(eventOptions EventOptions, secureNativeOptions config.SecureNat
 	event.Timestamp = dateUtils.ToTimestamp(t)
 	event.Properties = eventOptions.Properties
 
-	return event
+	return event, nil
 }
