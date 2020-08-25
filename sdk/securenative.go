@@ -11,9 +11,9 @@ import (
 )
 
 type SDKInterface interface {
-	Track(event models.SDKEvent)
-	Verify(event models.SDKEvent)
-	VerifyRequestPayload(event models.SDKEvent)
+	Track(event models.SDKEvent) error
+	Verify(event models.SDKEvent) (*models.VerifyResult ,error)
+	VerifyRequestPayload(request *http.Request) bool
 }
 
 type SecureNative struct {
@@ -59,11 +59,11 @@ func InitSDK(options config.SecureNativeOptions) (*SecureNative, error) {
 	return sn, nil
 }
 
-func (s *SecureNative) Track(event models.EventOptions) {
-	s.apiManager.Track(event)
+func (s *SecureNative) Track(event models.EventOptions) error {
+	return s.apiManager.Track(event)
 }
 
-func (s *SecureNative) Verify(event models.EventOptions) *models.VerifyResult {
+func (s *SecureNative) Verify(event models.EventOptions) (*models.VerifyResult, error) {
 	return s.apiManager.Verify(event)
 }
 

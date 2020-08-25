@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest]
         go-version: [1.12.x]
     steps:
       - name: Install Go
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Test
-        run: go test -coverprofile=coverage.yaml -covermode=atomic -v ./tests
+        run: go test -coverprofile=coverage.xml -covermode=atomic ./tests
       - name: Upload report to codecov
         if: ${{ always() }}
         run: bash <(curl -s https://codecov.io/bash)
