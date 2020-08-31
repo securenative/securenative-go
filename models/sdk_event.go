@@ -61,7 +61,7 @@ func NewSDKEvent(eventOptions EventOptions, secureNativeOptions config.SecureNat
 		Method:   event.Context.Method,
 	}
 
-	t := time.Now()
+	t := time.Now().UTC()
 	if eventOptions.Timestamp != nil {
 		t = *eventOptions.Timestamp
 	}
