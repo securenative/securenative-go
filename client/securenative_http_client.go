@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"fmt"
+	"github.com/securenative/securenative-go"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/utils"
 	"net/http"
@@ -29,7 +30,7 @@ func NewSecureNativeHttpClient(options config.SecureNativeOptions) *SecureNative
 
 func (c *SecureNativeHttpClient) Post(path string, body []byte) *http.Response {
 	url := fmt.Sprintf("%s/%s", c.Options.ApiUrl, path)
-	logger := utils.GetLogger()
+	logger := securenative_go.GetLogger()
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {

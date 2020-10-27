@@ -2,10 +2,10 @@ package events
 
 import (
 	"fmt"
+	"github.com/securenative/securenative-go"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/enums"
 	"github.com/securenative/securenative-go/models"
-	"github.com/securenative/securenative-go/utils"
 )
 
 type ApiManagerInterface interface {
@@ -26,7 +26,7 @@ func NewApiManager(eventManager *EventManager, options config.SecureNativeOption
 }
 
 func (m *ApiManager) Track(eventOptions models.EventOptions) error {
-	logger := utils.GetLogger()
+	logger := securenative_go.GetLogger()
 	logger.Debug("Track event call")
 
 	event, err := models.NewSDKEvent(eventOptions, m.Options)
@@ -39,7 +39,7 @@ func (m *ApiManager) Track(eventOptions models.EventOptions) error {
 }
 
 func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyResult, error) {
-	logger := utils.GetLogger()
+	logger := securenative_go.GetLogger()
 	logger.Debug("Verify event call")
 
 	event, err := models.NewSDKEvent(eventOptions, m.Options)

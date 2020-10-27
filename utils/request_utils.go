@@ -23,18 +23,18 @@ func (u *RequestUtils) GetSecureHeaderFromRequest(request *http.Request) string 
 func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *config.SecureNativeOptions) string {
 	if options != nil && len(options.ProxyHeaders) > 0 {
 		for _, header := range options.ProxyHeaders {
-			ip := request.Header.Get(header)
+			ip := request.Header[header][0]
 			if len(ip) > 0 || ip != "" {
 				return ip
 			}
 		}
 	}
-	
-	ip := request.Header.Get("X-Forwarded-For")
-	if len(ip) == 0 || ip == "" {
-		return request.RemoteAddr
+
+	if ip, ok := request.Header["X-Forwarded-For"]; ok {
+		return ip[0]
 	}
-	return ip
+
+	return request.RemoteAddr
 }
 
 func (u *RequestUtils) GetRemoteIpFromRequest(request *http.Request) string {

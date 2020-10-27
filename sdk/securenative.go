@@ -1,7 +1,9 @@
 package sdk
 
 import (
+	"github.com/securenative/securenative-go"
 	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/context"
 	"github.com/securenative/securenative-go/errors"
 	"github.com/securenative/securenative-go/events"
 	"github.com/securenative/securenative-go/models"
@@ -20,10 +22,11 @@ type SecureNative struct {
 	options      config.SecureNativeOptions
 	eventManager *events.EventManager
 	apiManager   *events.ApiManager
-	logger       *utils.SdKLogger
+	logger       *securenative_go.SdKLogger
 }
 
 var secureNative *SecureNative
+var _options *config.SecureNativeOptions
 
 func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) {
 	u := utils.Utils{}
@@ -33,6 +36,7 @@ func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) 
 
 	secureNative := &SecureNative{}
 	secureNative.options = options
+	_options = &options
 	secureNative.eventManager = events.NewEventManager(options, nil)
 
 	if len(options.ApiUrl) > 0 && options.ApiUrl != "" {
@@ -40,7 +44,7 @@ func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) 
 	}
 
 	secureNative.apiManager = events.NewApiManager(secureNative.eventManager, options)
-	secureNative.logger = utils.InitLogger(options.LogLevel)
+	secureNative.logger = securenative_go.InitLogger(options.LogLevel)
 
 	return secureNative, nil
 }
@@ -89,6 +93,10 @@ func GetInstance() (*SecureNative, error) {
 		return secureNative, &errors.SecureNativeSDKIllegalStateError{Msg: "SDK was not initialized"}
 	}
 	return secureNative, nil
+}
+
+func FromHttpRequest (request *http.Request) *context.SecureNativeContext {
+	return context.FromHttpRequest(request, _options)
 }
 
 func (s *SecureNative) Stop() {

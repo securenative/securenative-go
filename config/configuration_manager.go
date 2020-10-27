@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/securenative/securenative-go/utils"
+	"github.com/securenative/securenative-go"
 	"gopkg.in/yaml.v2"
 	"os"
 	"strconv"
@@ -50,7 +50,7 @@ func (c *ConfigurationManager) LoadConfig(configPath string) SecureNativeOptions
 }
 
 func (c *ConfigurationManager) readResourceFile(path string) map[string]string {
-	logger := utils.GetLogger()
+	logger := securenative_go.GetLogger()
 
 	file, err := os.Open(path)
 	if err != nil {

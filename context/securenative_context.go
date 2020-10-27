@@ -1,6 +1,7 @@
 package context
 
 import (
+	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/utils"
 	"net/http"
 )
@@ -17,7 +18,7 @@ type SecureNativeContext struct {
 	Body        string
 }
 
-func FromHttpRequest(request *http.Request) *SecureNativeContext {
+func FromHttpRequest(request *http.Request, options *config.SecureNativeOptions) *SecureNativeContext {
 	u := utils.Utils{}
 	requestUtils := utils.RequestUtils{}
 	cookie, err := request.Cookie(SecureNativeCookie)
@@ -33,7 +34,7 @@ func FromHttpRequest(request *http.Request) *SecureNativeContext {
 
 	return &SecureNativeContext{
 		ClientToken: clientToken,
-		Ip:          requestUtils.GetClientIpFromRequest(request),
+		Ip:          requestUtils.GetClientIpFromRequest(request, options),
 		RemoteIp:    requestUtils.GetRemoteIpFromRequest(request),
 		Headers:     headers,
 		Url:         request.URL.String(),

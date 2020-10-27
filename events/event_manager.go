@@ -3,6 +3,7 @@ package events
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/securenative/securenative-go"
 	client "github.com/securenative/securenative-go/client"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/errors"
@@ -13,7 +14,7 @@ import (
 	"time"
 )
 
-var logger = utils.GetLogger()
+var logger = securenative_go.GetLogger()
 
 type QueueItem struct {
 	Url   string

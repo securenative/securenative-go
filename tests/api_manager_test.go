@@ -53,7 +53,7 @@ func TestTrackEvent(t *testing.T) {
 	expected := "{\"eventType\":\"sn.user.login\",\"userId\":\"USER_ID\",\"userTraits\":{\"name\":\"USER_NAME\",\"email\":\"USER_EMAIL\",\"createdAt\":nil},\"request\":{\"cid\":nil,\"vid\":nil,\"fp\":nil,\"ip\":\"127.0.0.1\",\"remoteIp\":nil,\"headers\":{\"user-agent\":\"Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405\"},\"url\":nil,\"method\":nil},\"properties\":{\"prop2\":true,\"prop1\":\"CUSTOM_PARAM_VALUE\",\"prop3\":3}}"
 	httpmock.RegisterResponder("POST", "https://api.securenative-stg.com/collector/api/v1/track", httpmock.NewStringResponder(200, expected))
 
-	apiManager.Track(getEventOptions())
+	_ = apiManager.Track(getEventOptions())
 	result := httpmock.GetCallCountInfo()
 
 	if len(result) < 1 {

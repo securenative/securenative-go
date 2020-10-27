@@ -1,4 +1,4 @@
-package utils
+package securenative_go
 
 import (
 	"fmt"
