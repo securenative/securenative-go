@@ -6,6 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const DefaultConfigFile = "securenative.yml"
@@ -44,6 +45,7 @@ func (c *ConfigurationManager) LoadConfig(configPath string) SecureNativeOptions
 		Disable:          c.getBoolEnvOrDefault(properties, "SECURENATIVE_DISABLE", options.Disable),
 		LogLevel:         c.getStringEnvOrDefault(properties, "SECURENATIVE_LOG_LEVEL", options.LogLevel),
 		FailOverStrategy: c.getStringEnvOrDefault(properties, "SECURENATIVE_FAILOVER_STRATEGY", options.FailOverStrategy),
+		ProxyHeaders:     c.getSliceEnvOrDefault(properties, "SECURENATIVE_PROXY_HEADERS", options.ProxyHeaders),
 	}
 }
 
@@ -119,4 +121,22 @@ func (c *ConfigurationManager) getBoolEnvOrDefault(properties map[string]string,
 	}
 
 	return defaultKey
+}
+
+func (c *ConfigurationManager) getSliceEnvOrDefault(properties map[string]string, key string, defaultKey []string) []string {
+	if len(os.Getenv(key)) > 0 {
+		return parseStringSlice(os.Getenv(key))
+	}
+
+	if len(properties[key]) > 0 {
+		return parseStringSlice(properties[key])
+	}
+
+	return defaultKey
+}
+
+func parseStringSlice(str string) []string {
+	s1 := strings.Replace(str, "[", "", -1)
+	s2 := strings.Replace(s1, "]", "", -1)
+	return strings.Split(s2, ",")
 }
