@@ -1,4 +1,4 @@
-package securenative_go
+package logger
 
 import (
 	"fmt"

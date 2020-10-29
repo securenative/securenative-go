@@ -3,8 +3,8 @@ package client
 import (
 	"bytes"
 	"fmt"
-	"github.com/securenative/securenative-go"
 	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/logger"
 	"github.com/securenative/securenative-go/utils"
 	"net/http"
 	"time"
@@ -31,11 +31,11 @@ func NewSecureNativeHttpClient(options config.SecureNativeOptions) *SecureNative
 
 func (c *SecureNativeHttpClient) Post(path string, body []byte) (*http.Response, error) {
 	url := fmt.Sprintf("%s/%s", c.Options.ApiUrl, path)
-	logger := securenative_go.GetLogger()
+	log := logger.GetLogger()
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
-		logger.Debug(fmt.Sprintf("Failed to build request; %s", err))
+		log.Debug(fmt.Sprintf("Failed to build request; %s", err))
 		return nil, err
 	}
 
@@ -46,7 +46,7 @@ func (c *SecureNativeHttpClient) Post(path string, body []byte) (*http.Response,
 	client := &http.Client{Timeout: time.Duration(c.Options.Timeout / 1000)}
 	res, err := client.Do(req)
 	if err != nil {
-		logger.Debug(fmt.Sprintf("Failed to post request to %s; %s", c.Options.ApiUrl, err))
+		log.Debug(fmt.Sprintf("Failed to post request to %s; %s", c.Options.ApiUrl, err))
 		return nil, err
 	}
 

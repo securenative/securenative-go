@@ -1,11 +1,11 @@
 package sdk
 
 import (
-	logger "github.com/securenative/securenative-go"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/context"
 	"github.com/securenative/securenative-go/errors"
 	"github.com/securenative/securenative-go/events"
+	"github.com/securenative/securenative-go/logger"
 	"github.com/securenative/securenative-go/models"
 	"github.com/securenative/securenative-go/utils"
 	"io/ioutil"

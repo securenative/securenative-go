@@ -2,9 +2,9 @@ package events
 
 import (
 	"fmt"
-	"github.com/securenative/securenative-go"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/enums"
+	"github.com/securenative/securenative-go/logger"
 	"github.com/securenative/securenative-go/models"
 )
 
@@ -26,8 +26,8 @@ func NewApiManager(eventManager *EventManager, options config.SecureNativeOption
 }
 
 func (m *ApiManager) Track(eventOptions models.EventOptions) error {
-	logger := securenative_go.GetLogger()
-	logger.Debug("Track event call")
+	log := logger.GetLogger()
+	log.Debug("Track event call")
 
 	event, err := models.NewSDKEvent(eventOptions, m.Options)
 	if err != nil {
@@ -39,8 +39,8 @@ func (m *ApiManager) Track(eventOptions models.EventOptions) error {
 }
 
 func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyResult, error) {
-	logger := securenative_go.GetLogger()
-	logger.Debug("Verify event call")
+	log := logger.GetLogger()
+	log.Debug("Verify event call")
 
 	event, err := models.NewSDKEvent(eventOptions, m.Options)
 
@@ -50,7 +50,7 @@ func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyRes
 
 	res, err := m.EventManager.SendSync(event, enums.ApiRoute.Verify)
 	if err != nil || res == nil {
-		logger.Debug(fmt.Sprintf("Failed to call verify; %s", err))
+		log.Debug(fmt.Sprintf("Failed to call verify; %s", err))
 		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {
 			return &models.VerifyResult{RiskLevel: enums.RiskLevel.Low, Score: 0, Triggers: []string{}}, nil
 		}

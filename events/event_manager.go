@@ -3,10 +3,10 @@ package events
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/securenative/securenative-go"
 	"github.com/securenative/securenative-go/client"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/errors"
+	"github.com/securenative/securenative-go/logger"
 	"github.com/securenative/securenative-go/models"
 	"github.com/securenative/securenative-go/utils"
 	"io/ioutil"
@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var logger = securenative_go.GetLogger()
+var log = logger.GetLogger()
 
 type QueueItem struct {
 	Url   string
@@ -65,13 +65,13 @@ func NewEventManager(options config.SecureNativeOptions, httpClient *client.Secu
 
 func (e *EventManager) SendAsync(event models.SDKEvent, path string) {
 	if e.Options.Disable {
-		logger.Warning("SDK is disabled. no operation will be performed")
+		log.Warning("SDK is disabled. no operation will be performed")
 		return
 	}
 
 	body, err := json.Marshal(e.serialize(event))
 	if err != nil {
-		logger.Error(fmt.Sprintf("Failed to marshal event body; %s", err))
+		log.Error(fmt.Sprintf("Failed to marshal event body; %s", err))
 		return
 	}
 
@@ -85,16 +85,16 @@ func (e *EventManager) SendAsync(event models.SDKEvent, path string) {
 
 func (e *EventManager) SendSync(event models.SDKEvent, path string) (map[string]interface{}, error) {
 	if e.Options.Disable {
-		logger.Warning("SDK is disabled. no operation will be performed")
+		log.Warning("SDK is disabled. no operation will be performed")
 		return nil, &errors.SecureNativeSDKIllegalStateError{Msg: "SDK is disabled. no operation will be performed"}
 	}
 
 	body, err := json.Marshal(e.serialize(event))
 	if err != nil {
-		logger.Error(fmt.Sprintf("Failed to marshal event body; %s", err))
+		log.Error(fmt.Sprintf("Failed to marshal event body; %s", err))
 		return nil, err
 	}
-	logger.Debug(fmt.Sprintf("Attempting to send event %s", body))
+	log.Debug(fmt.Sprintf("Attempting to send event %s", body))
 
 	res, err := e.HttpClient.Post(
 		path,
@@ -102,7 +102,7 @@ func (e *EventManager) SendSync(event models.SDKEvent, path string) (map[string]
 	)
 
 	if err != nil || res != nil && res.StatusCode != 200 || res == nil {
-		logger.Info(fmt.Sprintf("SecureNative failed to call endpoint %s with event %s. adding back to queue", path, event))
+		log.Info(fmt.Sprintf("SecureNative failed to call endpoint %s with event %s. adding back to queue", path, event))
 		return nil, fmt.Errorf("failed to send event; %s", err)
 	}
 
@@ -110,21 +110,21 @@ func (e *EventManager) SendSync(event models.SDKEvent, path string) (map[string]
 }
 
 func (e *EventManager) StartEventPersist() {
-	logger.Debug("Starting automatic event persistence")
+	log.Debug("Starting automatic event persistence")
 	if e.Options.AutoSend || e.SendEnabled {
 		e.SendEnabled = true
 		go e.run()
 	} else {
-		logger.Debug("Automatic event persistence is disabled, you should persist events manually")
+		log.Debug("Automatic event persistence is disabled, you should persist events manually")
 	}
 }
 
 func (e *EventManager) StopEventPersist() {
 	if e.SendEnabled {
-		logger.Debug("Attempting to stop automatic event persistence")
+		log.Debug("Attempting to stop automatic event persistence")
 		e.flush()
 		e.SendEnabled = false
-		logger.Debug("Stopped event persistence")
+		log.Debug("Stopped event persistence")
 	}
 }
 
@@ -143,18 +143,18 @@ func (e *EventManager) run() {
 
 				if err != nil || res != nil && res.StatusCode != 200{
 					item.Retry = true
-					logger.Error(fmt.Sprintf("Failed to send event; %s", err))
+					log.Error(fmt.Sprintf("Failed to send event; %s", err))
 					e.backOffSend(item)
 				} else if res != nil && res.StatusCode == 401 {
 					item.Retry = false
-					logger.Error(fmt.Sprintf("Failed to send event; %s", err))
+					log.Error(fmt.Sprintf("Failed to send event; %s", err))
 				} else {
 					_, err = readBody(res)
 					if err != nil {
-						logger.Error(fmt.Sprintf("Failed to send event; %s", err))
+						log.Error(fmt.Sprintf("Failed to send event; %s", err))
 						e.backOffSend(item)
 					}
-					logger.Debug(fmt.Sprintf("Event successfully sent; %s", item.Body))
+					log.Debug(fmt.Sprintf("Event successfully sent; %s", item.Body))
 				}
 			}
 		}
@@ -169,7 +169,7 @@ func (e *EventManager) backOffSend(item QueueItem) {
 		}
 
 		backOff := e.Coefficients[e.Attempt] * e.Options.Interval
-		logger.Debug(fmt.Sprintf("Automatic back-off of %d", backOff))
+		log.Debug(fmt.Sprintf("Automatic back-off of %d", backOff))
 		e.SendEnabled = false
 		time.Sleep(time.Duration(backOff))
 		e.SendEnabled = true
@@ -216,13 +216,13 @@ func readBody(response *http.Response) (map[string]interface{}, error) {
 	b, err := ioutil.ReadAll(response.Body)
 	defer response.Body.Close()
 	if err != nil {
-		logger.Error(fmt.Sprintf("Failed to read response body; %s", err))
+		log.Error(fmt.Sprintf("Failed to read response body; %s", err))
 		return nil, err
 	}
 
 	err = json.Unmarshal(b, &resBody)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Failed to unmarshal response body; %s", err))
+		log.Error(fmt.Sprintf("Failed to unmarshal response body; %s", err))
 		return nil, err
 	}
 
