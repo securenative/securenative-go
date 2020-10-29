@@ -2,6 +2,7 @@ package tests
 
 import (
 	"github.com/securenative/securenative-go/context"
+	"github.com/securenative/securenative-go/sdk"
 	"net/http"
 	"net/url"
 	"testing"
@@ -25,7 +26,7 @@ func TestCreateContextFromRequest(t *testing.T) {
 		RequestURI: "/login/param1=value1&param2=value2",
 	}
 
-	c := context.FromHttpRequest(request)
+	c := sdk.FromHttpRequest(request)
 	if c.ClientToken != clientToken {
 		t.Errorf("Test Failed: expected to recieve: %s, got: %s", clientToken, c.ClientToken)
 	}
@@ -57,7 +58,7 @@ func TestCreateContextFromRequestWithCookie(t *testing.T) {
 	}
 	request.AddCookie(cookie)
 
-	c := context.FromHttpRequest(request)
+	c := sdk.FromHttpRequest(request)
 	if c.ClientToken != clientToken {
 		t.Errorf("Test Failed: expected to recieve: %s, got: %s", clientToken, c.ClientToken)
 	}

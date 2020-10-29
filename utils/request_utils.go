@@ -1,6 +1,9 @@
 package utils
 
-import "net/http"
+import (
+	"github.com/securenative/securenative-go/config"
+	"net/http"
+)
 
 type RequestUtils struct{}
 
@@ -17,12 +20,21 @@ func (u *RequestUtils) GetSecureHeaderFromRequest(request *http.Request) string 
 	}
 }
 
-func (u *RequestUtils) GetClientIpFromRequest(request *http.Request) string {
-	ip := request.Header.Get("X-Forwarded-For")
-	if len(ip) == 0 || ip == "" {
-		return request.RemoteAddr
+func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *config.SecureNativeOptions) string {
+	if options != nil && len(options.ProxyHeaders) > 0 {
+		for _, header := range options.ProxyHeaders {
+			ip := request.Header[header][0]
+			if len(ip) > 0 || ip != "" {
+				return ip
+			}
+		}
 	}
-	return ip
+
+	if ip, ok := request.Header["X-Forwarded-For"]; ok {
+		return ip[0]
+	}
+
+	return request.RemoteAddr
 }
 
 func (u *RequestUtils) GetRemoteIpFromRequest(request *http.Request) string {

@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/logger"
 	"github.com/securenative/securenative-go/utils"
 	"net/http"
+	"time"
 )
 
 const AuthorizationHeader = "Authorization"
@@ -27,28 +29,28 @@ func NewSecureNativeHttpClient(options config.SecureNativeOptions) *SecureNative
 	return &SecureNativeHttpClient{Options: options}
 }
 
-func (c *SecureNativeHttpClient) Post(path string, body []byte) *http.Response {
+func (c *SecureNativeHttpClient) Post(path string, body []byte) (*http.Response, error) {
 	url := fmt.Sprintf("%s/%s", c.Options.ApiUrl, path)
-	logger := utils.GetLogger()
+	log := logger.GetLogger()
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
-		logger.Debug(fmt.Sprintf("Failed to build request; %s", err))
-		return nil
+		log.Debug(fmt.Sprintf("Failed to build request; %s", err))
+		return nil, err
 	}
 
 	for key, value := range c.GetHeaders() {
 		req.Header.Add(key, value)
 	}
 
-	client := &http.Client{}
+	client := &http.Client{Timeout: time.Duration(c.Options.Timeout / 1000)}
 	res, err := client.Do(req)
 	if err != nil {
-		logger.Debug(fmt.Sprintf("Failed to post request to %s; %s", c.Options.ApiUrl, err))
-		return nil
+		log.Debug(fmt.Sprintf("Failed to post request to %s; %s", c.Options.ApiUrl, err))
+		return nil, err
 	}
 
-	return res
+	return res, nil
 }
 
 func (c *SecureNativeHttpClient) GetHeaders() map[string]string {

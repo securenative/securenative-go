@@ -1,17 +1,18 @@
 package sdk
 
 import (
+	"github.com/securenative/securenative-go/config"
+	"github.com/securenative/securenative-go/context"
+	"github.com/securenative/securenative-go/errors"
+	"github.com/securenative/securenative-go/events"
+	"github.com/securenative/securenative-go/logger"
+	"github.com/securenative/securenative-go/models"
+	"github.com/securenative/securenative-go/utils"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/securenative/securenative-go/config"
-	"github.com/securenative/securenative-go/errors"
-	"github.com/securenative/securenative-go/events"
-	"github.com/securenative/securenative-go/models"
-	"github.com/securenative/securenative-go/utils"
 )
 
 type SDKInterface interface {
@@ -24,10 +25,11 @@ type SecureNative struct {
 	options      config.SecureNativeOptions
 	eventManager *events.EventManager
 	apiManager   *events.ApiManager
-	logger       *utils.SdKLogger
+	logger       *logger.SdKLogger
 }
 
 var secureNative *SecureNative
+var _options *config.SecureNativeOptions
 
 func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) {
 	u := utils.Utils{}
@@ -37,6 +39,7 @@ func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) 
 
 	secureNative := &SecureNative{}
 	secureNative.options = options
+	_options = &options
 	secureNative.eventManager = events.NewEventManager(options, nil)
 
 	if len(options.ApiUrl) > 0 && options.ApiUrl != "" {
@@ -44,7 +47,7 @@ func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) 
 	}
 
 	secureNative.apiManager = events.NewApiManager(secureNative.eventManager, options)
-	secureNative.logger = utils.InitLogger(options.LogLevel)
+	secureNative.logger = logger.InitLogger(options.LogLevel)
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
@@ -100,6 +103,17 @@ func GetInstance() (*SecureNative, error) {
 		return secureNative, &errors.SecureNativeSDKIllegalStateError{Msg: "SDK was not initialized"}
 	}
 	return secureNative, nil
+}
+
+func FromHttpRequest (request *http.Request) *context.SecureNativeContext {
+	return context.FromHttpRequest(request, _options)
+}
+
+func (s *SecureNative) Stop() {
+	if secureNative != nil {
+		s.eventManager.StopEventPersist()
+		secureNative = nil
+	}
 }
 
 func Flush() {

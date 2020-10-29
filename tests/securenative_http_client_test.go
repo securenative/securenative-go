@@ -16,7 +16,7 @@ func TestShouldMakeSimplePostCall(t *testing.T) {
 	expected := "{\"event\": \"SOME_EVENT_NAME\"}"
 	httpmock.RegisterResponder("POST", "https://api.securenative-stg.com/collector/api/v1/track", httpmock.NewStringResponder(200, expected))
 
-	result := httpClient.Post("track", []byte(expected))
+	result, _ := httpClient.Post("track", []byte(expected))
 
 	if result.StatusCode != 200 && result.Status != "200 OK" {
 		t.Errorf("Test Failed: data recived does not match: got: %d, expected: %d", result.StatusCode, 200)

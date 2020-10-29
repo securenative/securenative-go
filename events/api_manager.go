@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/enums"
+	"github.com/securenative/securenative-go/logger"
 	"github.com/securenative/securenative-go/models"
-	"github.com/securenative/securenative-go/utils"
 )
 
 type ApiManagerInterface interface {
@@ -26,8 +26,8 @@ func NewApiManager(eventManager *EventManager, options config.SecureNativeOption
 }
 
 func (m *ApiManager) Track(eventOptions models.EventOptions) error {
-	logger := utils.GetLogger()
-	logger.Debug("Track event call")
+	log := logger.GetLogger()
+	log.Debug("Track event call")
 
 	event, err := models.NewSDKEvent(eventOptions, m.Options)
 	if err != nil {
@@ -39,8 +39,8 @@ func (m *ApiManager) Track(eventOptions models.EventOptions) error {
 }
 
 func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyResult, error) {
-	logger := utils.GetLogger()
-	logger.Debug("Verify event call")
+	log := logger.GetLogger()
+	log.Debug("Verify event call")
 
 	event, err := models.NewSDKEvent(eventOptions, m.Options)
 
@@ -48,24 +48,46 @@ func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyRes
 		return nil, err
 	}
 
-	res, err := m.EventManager.SendSync(event, enums.ApiRoute.Verify, false)
+	res, err := m.EventManager.SendSync(event, enums.ApiRoute.Verify)
 	if err != nil || res == nil {
-		logger.Debug(fmt.Sprintf("Failed to call verify; %s", err))
+		log.Debug(fmt.Sprintf("Failed to call verify; %s", err))
 		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {
-			return &models.VerifyResult{RiskLevel: enums.RiskLevel.Low, Score: 0, Triggers: nil}, nil
+			return &models.VerifyResult{RiskLevel: enums.RiskLevel.Low, Score: 0, Triggers: []string{}}, nil
 		}
-		return &models.VerifyResult{RiskLevel: enums.RiskLevel.High, Score: 1, Triggers: nil}, nil
+		return &models.VerifyResult{RiskLevel: enums.RiskLevel.High, Score: 1, Triggers: []string{}}, nil
 	}
 
-	score := res["score"].(float64)
+	var riskLevel string
+	if res["riskLevel"] != nil {
+		riskLevel = res["riskLevel"].(string)
+	} else {
+		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {
+			riskLevel = enums.RiskLevel.Low
+		} else {
+			riskLevel = enums.RiskLevel.High
+		}
+	}
+
+	var score float64
+	if res["score"] != nil {
+		score = res["score"].(float64)
+	} else {
+		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {
+			score = 0
+		} else {
+			score = 1
+		}
+	}
 
 	var triggers []string
-	for _, v := range res["triggers"].([]interface{}) {
-		triggers = append(triggers, fmt.Sprint(v))
+	if res["triggers"] != nil {
+		for _, v := range res["triggers"].([]interface{}) {
+			triggers = append(triggers, fmt.Sprint(v))
+		}
 	}
 
 	return &models.VerifyResult{
-		RiskLevel: res["riskLevel"].(string),
+		RiskLevel: riskLevel,
 		Score:     score,
 		Triggers:  triggers,
 	}, nil
