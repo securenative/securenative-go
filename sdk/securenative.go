@@ -1,18 +1,22 @@
 package sdk
 
 import (
+	"io/ioutil"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/errors"
 	"github.com/securenative/securenative-go/events"
 	"github.com/securenative/securenative-go/models"
 	"github.com/securenative/securenative-go/utils"
-	"io/ioutil"
-	"net/http"
 )
 
 type SDKInterface interface {
 	Track(event models.SDKEvent) error
-	Verify(event models.SDKEvent) (*models.VerifyResult ,error)
+	Verify(event models.SDKEvent) (*models.VerifyResult, error)
 	VerifyRequestPayload(request *http.Request) bool
 }
 
@@ -41,6 +45,13 @@ func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) 
 
 	secureNative.apiManager = events.NewApiManager(secureNative.eventManager, options)
 	secureNative.logger = utils.InitLogger(options.LogLevel)
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	go func() {
+		<-sig
+		secureNative.eventManager.StopEventPersist()
+	}()
 
 	return secureNative, nil
 }
@@ -89,13 +100,6 @@ func GetInstance() (*SecureNative, error) {
 		return secureNative, &errors.SecureNativeSDKIllegalStateError{Msg: "SDK was not initialized"}
 	}
 	return secureNative, nil
-}
-
-func (s *SecureNative) Stop() {
-	if secureNative != nil {
-		s.eventManager.StopEventPersist()
-		secureNative = nil
-	}
 }
 
 func Flush() {
