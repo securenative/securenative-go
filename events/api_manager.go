@@ -57,6 +57,17 @@ func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyRes
 		return &models.VerifyResult{RiskLevel: enums.RiskLevel.High, Score: 1, Triggers: []string{}}, nil
 	}
 
+	var riskLevel string
+	if res["riskLevel"] != nil {
+		riskLevel = res["riskLevel"].(string)
+	} else {
+		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {
+			riskLevel = enums.RiskLevel.Low
+		} else {
+			riskLevel = enums.RiskLevel.High
+		}
+	}
+
 	var score float64
 	if res["score"] != nil {
 		score = res["score"].(float64)
@@ -76,7 +87,7 @@ func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyRes
 	}
 
 	return &models.VerifyResult{
-		RiskLevel: res["riskLevel"].(string),
+		RiskLevel: riskLevel,
 		Score:     score,
 		Triggers:  triggers,
 	}, nil
