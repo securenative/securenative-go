@@ -1,7 +1,7 @@
 package sdk
 
 import (
-	"github.com/securenative/securenative-go"
+	logger "github.com/securenative/securenative-go"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/context"
 	"github.com/securenative/securenative-go/errors"
@@ -10,11 +10,14 @@ import (
 	"github.com/securenative/securenative-go/utils"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 type SDKInterface interface {
 	Track(event models.SDKEvent) error
-	Verify(event models.SDKEvent) (*models.VerifyResult ,error)
+	Verify(event models.SDKEvent) (*models.VerifyResult, error)
 	VerifyRequestPayload(request *http.Request) bool
 }
 
@@ -22,7 +25,7 @@ type SecureNative struct {
 	options      config.SecureNativeOptions
 	eventManager *events.EventManager
 	apiManager   *events.ApiManager
-	logger       *securenative_go.SdKLogger
+	logger       *logger.SdKLogger
 }
 
 var secureNative *SecureNative
@@ -44,7 +47,14 @@ func newSecureNative(options config.SecureNativeOptions) (*SecureNative, error) 
 	}
 
 	secureNative.apiManager = events.NewApiManager(secureNative.eventManager, options)
-	secureNative.logger = securenative_go.InitLogger(options.LogLevel)
+	secureNative.logger = logger.InitLogger(options.LogLevel)
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	go func() {
+		<-sig
+		secureNative.eventManager.StopEventPersist()
+	}()
 
 	return secureNative, nil
 }
