@@ -52,16 +52,27 @@ func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyRes
 	if err != nil || res == nil {
 		logger.Debug(fmt.Sprintf("Failed to call verify; %s", err))
 		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {
-			return &models.VerifyResult{RiskLevel: enums.RiskLevel.Low, Score: 0, Triggers: nil}, nil
+			return &models.VerifyResult{RiskLevel: enums.RiskLevel.Low, Score: 0, Triggers: []string{}}, nil
 		}
-		return &models.VerifyResult{RiskLevel: enums.RiskLevel.High, Score: 1, Triggers: nil}, nil
+		return &models.VerifyResult{RiskLevel: enums.RiskLevel.High, Score: 1, Triggers: []string{}}, nil
 	}
 
-	score := res["score"].(float64)
+	var score float64
+	if res["score"] != nil {
+		score = res["score"].(float64)
+	} else {
+		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {
+			score = 0
+		} else {
+			score = 1
+		}
+	}
 
 	var triggers []string
-	for _, v := range res["triggers"].([]interface{}) {
-		triggers = append(triggers, fmt.Sprint(v))
+	if res["triggers"] != nil {
+		for _, v := range res["triggers"].([]interface{}) {
+			triggers = append(triggers, fmt.Sprint(v))
+		}
 	}
 
 	return &models.VerifyResult{
