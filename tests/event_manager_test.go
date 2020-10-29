@@ -33,7 +33,7 @@ func TestShouldSuccessfullySendSyncEventWithStatusCode200(t *testing.T) {
 	body := "{\"data\": true}"
 	httpmock.RegisterResponder("POST", "https://api.securenative-stg.com/collector/api/v1/track", httpmock.NewStringResponder(200, body))
 
-	data, _ := eventManager.SendSync(getOptions(), "track", false)
+	data, _ := eventManager.SendSync(getOptions(), "track")
 
 	if data["data"] != true {
 		t.Errorf("Test Failed: data recived does not match: got: %s, expected: %t", data, true)
@@ -51,7 +51,7 @@ func TestShouldSendSyncEventAndSailWhenStatusCode401(t *testing.T)  {
 
 	httpmock.RegisterResponder("POST", "https://api.securenative-stg.com/collector/api/v1/track", httpmock.NewStringResponder(401, ""))
 
-	_, err := eventManager.SendSync(getOptions(), "track", false)
+	_, err := eventManager.SendSync(getOptions(), "track")
 	if err == nil {
 		t.Errorf("Test Failed: expected to recieve 401 status code")
 	}
@@ -68,7 +68,7 @@ func TestShouldSendSyncEventAndFailWhenStatusCode500(t *testing.T) {
 
 	httpmock.RegisterResponder("POST", "https://api.securenative-stg.com/collector/api/v1/track", httpmock.NewStringResponder(500, ""))
 
-	_, err := eventManager.SendSync(getOptions(), "track", false)
+	_, err := eventManager.SendSync(getOptions(), "track")
 	if err == nil {
 		t.Errorf("Test Failed: expected to recieve 500 status code")
 	}

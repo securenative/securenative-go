@@ -48,7 +48,7 @@ func (m *ApiManager) Verify(eventOptions models.EventOptions) (*models.VerifyRes
 		return nil, err
 	}
 
-	res, err := m.EventManager.SendSync(event, enums.ApiRoute.Verify, false)
+	res, err := m.EventManager.SendSync(event, enums.ApiRoute.Verify)
 	if err != nil || res == nil {
 		logger.Debug(fmt.Sprintf("Failed to call verify; %s", err))
 		if m.Options.FailOverStrategy == enums.FailOverStrategy.FailOpen {

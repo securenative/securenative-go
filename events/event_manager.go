@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/securenative/securenative-go"
-	client "github.com/securenative/securenative-go/client"
+	"github.com/securenative/securenative-go/client"
 	"github.com/securenative/securenative-go/config"
 	"github.com/securenative/securenative-go/errors"
 	"github.com/securenative/securenative-go/models"
@@ -83,7 +83,7 @@ func (e *EventManager) SendAsync(event models.SDKEvent, path string) {
 	e.Queue = append(e.Queue, item)
 }
 
-func (e *EventManager) SendSync(event models.SDKEvent, path string, retry bool) (map[string]interface{}, error) {
+func (e *EventManager) SendSync(event models.SDKEvent, path string) (map[string]interface{}, error) {
 	if e.Options.Disable {
 		logger.Warning("SDK is disabled. no operation will be performed")
 		return nil, &errors.SecureNativeSDKIllegalStateError{Msg: "SDK is disabled. no operation will be performed"}
@@ -96,20 +96,14 @@ func (e *EventManager) SendSync(event models.SDKEvent, path string, retry bool) 
 	}
 	logger.Debug(fmt.Sprintf("Attempting to send event %s", body))
 
-	res := e.HttpClient.Post(
+	res, err := e.HttpClient.Post(
 		path,
 		body,
 	)
 
-	if res.StatusCode != 200 {
+	if err != nil || res != nil && res.StatusCode != 200 || res == nil {
 		logger.Info(fmt.Sprintf("SecureNative failed to call endpoint %s with event %s. adding back to queue", path, event))
-		item := QueueItem{
-			Url:   path,
-			Body:  body,
-			Retry: retry,
-		}
-		e.Queue = append(e.Queue, item)
-		return nil, fmt.Errorf("failed to send event; %d; %s", res.StatusCode, res.Status)
+		return nil, fmt.Errorf("failed to send event; %s", err)
 	}
 
 	return readBody(res)
@@ -136,7 +130,7 @@ func (e *EventManager) StopEventPersist() {
 
 func (e *EventManager) flush() {
 	for _, item := range e.Queue {
-		e.HttpClient.Post(item.Url, item.Body)
+		_, _ = e.HttpClient.Post(item.Url, item.Body)
 	}
 }
 
@@ -144,33 +138,41 @@ func (e *EventManager) run() {
 	for true {
 		if len(e.Queue) > 0 && e.SendEnabled {
 			for i, item := range e.Queue {
-				res := e.HttpClient.Post(item.Url, item.Body)
+				res, err := e.HttpClient.Post(item.Url, item.Body)
 				e.Queue = removeItem(e.Queue, i)
-				if res.StatusCode == 401 {
-					item.Retry = false
-				} else if res.StatusCode != 200 {
+
+				if err != nil || res != nil && res.StatusCode != 200{
 					item.Retry = true
-				}
-
-				logger.Debug(fmt.Sprintf("Event successfully sent; %s", item.Body))
-				_, err := readBody(res)
-				if err != nil {
 					logger.Error(fmt.Sprintf("Failed to send event; %s", err))
-					if item.Retry {
-						if len(e.Coefficients) == int(e.Attempt+1) {
-							e.Attempt = 0
-						}
-
-						backOff := e.Coefficients[e.Attempt] * e.Options.Interval
-						logger.Debug(fmt.Sprintf("Automatic back-off of %d", backOff))
-						e.SendEnabled = false
-						time.Sleep(time.Duration(backOff))
-						e.SendEnabled = true
+					e.backOffSend(item)
+				} else if res != nil && res.StatusCode == 401 {
+					item.Retry = false
+					logger.Error(fmt.Sprintf("Failed to send event; %s", err))
+				} else {
+					_, err = readBody(res)
+					if err != nil {
+						logger.Error(fmt.Sprintf("Failed to send event; %s", err))
+						e.backOffSend(item)
 					}
+					logger.Debug(fmt.Sprintf("Event successfully sent; %s", item.Body))
 				}
 			}
 		}
 		time.Sleep(time.Duration(e.Interval / 1000))
+	}
+}
+
+func (e *EventManager) backOffSend(item QueueItem) {
+	if item.Retry {
+		if len(e.Coefficients) == int(e.Attempt+1) {
+			e.Attempt = 0
+		}
+
+		backOff := e.Coefficients[e.Attempt] * e.Options.Interval
+		logger.Debug(fmt.Sprintf("Automatic back-off of %d", backOff))
+		e.SendEnabled = false
+		time.Sleep(time.Duration(backOff))
+		e.SendEnabled = true
 	}
 }
 
