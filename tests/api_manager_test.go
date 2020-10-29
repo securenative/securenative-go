@@ -39,6 +39,7 @@ func getSecureNativeOptions() config.SecureNativeOptions {
 	options.AutoSend = true
 	options.Interval = 10
 	options.ApiUrl = "https://api.securenative-stg.com/collector/api/v1"
+	options.Timeout = 1
 	return options
 }
 
@@ -65,7 +66,6 @@ func TestTrackEvent(t *testing.T) {
 
 func TestTimeoutOnPost(t *testing.T) {
 	secureNativeOptions := getSecureNativeOptions()
-	secureNativeOptions.Timeout = 1
 
 	eventManager := events.NewEventManager(secureNativeOptions, nil)
 	eventManager.StartEventPersist()
