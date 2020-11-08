@@ -49,12 +49,12 @@ func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *co
 				if strings.Contains(ip, ",") {
 					ips := strings.Split(ip, ",")
 					for _, extracted := range ips {
-						if ipUtils.IsLoopBack(strings.ReplaceAll(extracted, " ", "")) {
+						if !ipUtils.IsLoopBack(strings.ReplaceAll(extracted, " ", "")) {
 							return strings.ReplaceAll(extracted, " ", "")
 						}
 					}
 				}
-				if ipUtils.IsLoopBack(strings.ReplaceAll(ip, " ", "")) {
+				if !ipUtils.IsLoopBack(strings.ReplaceAll(ip, " ", "")) {
 					return strings.ReplaceAll(ip, " ", "")
 				}
 			}
@@ -74,7 +74,7 @@ func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *co
 	for _, header := range ipHeaders {
 		if ips, ok := request.Header[header]; ok {
 			for _, ip := range ips {
-				if ipUtils.IsLoopBack(strings.ReplaceAll(ip, " ", "")) {
+				if !ipUtils.IsLoopBack(strings.ReplaceAll(ip, " ", "")) {
 					return strings.ReplaceAll(ip, " ", "")
 				}
 			}
