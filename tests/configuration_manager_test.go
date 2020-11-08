@@ -65,6 +65,10 @@ func TestLoadDefaultConfig(t *testing.T) {
 	if options.FailOverStrategy != enums.FailOverStrategy.FailOpen {
 		t.Errorf("Test Failed: expected to reiecve: %s, got: %s", enums.FailOverStrategy.FailOpen, options.FailOverStrategy)
 	}
+
+	if len(options.ProxyHeaders) !=0 {
+		t.Errorf("Test Failed: expected lenght of proxy headers to be: %d, got: %d", 0, len(options.ProxyHeaders))
+	}
 }
 
 func TestGetConfigFromEnvVariables(t *testing.T) {
@@ -79,6 +83,7 @@ func TestGetConfigFromEnvVariables(t *testing.T) {
 	_ = os.Setenv("SECURENATIVE_DISABLE", "true")
 	_ = os.Setenv("SECURENATIVE_LOG_LEVEL", "DEBUG")
 	_ = os.Setenv("SECURENATIVE_FAILOVER_STRATEGY", "fail-closed")
+	_ = os.Setenv("SECURENATIVE_PROXY_HEADERS", "CF-Connecting-Ip,Some-Random-Ip")
 
 	options := configManager.LoadConfig("")
 	os.Clearenv()
@@ -109,5 +114,17 @@ func TestGetConfigFromEnvVariables(t *testing.T) {
 	}
 	if options.FailOverStrategy != enums.FailOverStrategy.FailClose {
 		t.Errorf("Test Failed: expected to reiecve: %s, got: %s", enums.FailOverStrategy.FailClose, options.FailOverStrategy)
+	}
+
+	if len(options.ProxyHeaders) != len([]string{"CF-Connecting-Ip", "Some-Random-Ip"}) {
+		t.Errorf("Test Failed: expected length of proxy headers to be: %d, got: %d", len([]string{"CF-Connecting-Ip", "Some-Random-Ip"}),len(options.ProxyHeaders))
+	}
+
+	if options.ProxyHeaders[0] != "CF-Connecting-Ip" {
+		t.Errorf("Test Failed: expected to reiecve: %s, got: %s", "CF-Connecting-Ip", options.ProxyHeaders[0])
+	}
+
+	if options.ProxyHeaders[1] != "Some-Random-Ip" {
+		t.Errorf("Test Failed: expected to reiecve: %s, got: %s", "Some-Random-Ip", options.ProxyHeaders[1])
 	}
 }
