@@ -86,6 +86,7 @@ func TestGetConfigFromEnvVariables(t *testing.T) {
 	_ = os.Setenv("SECURENATIVE_PROXY_HEADERS", "CF-Connecting-Ip,Some-Random-Ip")
 
 	options := configManager.LoadConfig("")
+	expectedProxyHeaders := []string{"CF-Connecting-Ip", "Some-Random-Ip"}
 	os.Clearenv()
 
 	if options.ApiKey != "SOME_ENV_API_KEY" {
@@ -116,7 +117,7 @@ func TestGetConfigFromEnvVariables(t *testing.T) {
 		t.Errorf("Test Failed: expected to reiecve: %s, got: %s", enums.FailOverStrategy.FailClose, options.FailOverStrategy)
 	}
 
-	if len(options.ProxyHeaders) != len([]string{"CF-Connecting-Ip", "Some-Random-Ip"}) {
+	if len(options.ProxyHeaders) != len(expectedProxyHeaders) {
 		t.Errorf("Test Failed: expected length of proxy headers to be: %d, got: %d", len([]string{"CF-Connecting-Ip", "Some-Random-Ip"}),len(options.ProxyHeaders))
 	}
 
