@@ -37,11 +37,12 @@ func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *co
 							return extracted
 						}
 					} else {
-						if ipUtils.IsValidPublicIp(strings.ReplaceAll(ip, " ", "")) {
-							return strings.ReplaceAll(ip, " ", "")
+						candidate := ipUtils.NormalizeIp(ip)
+						if ipUtils.IsValidPublicIp(candidate) {
+							return candidate
 						}
-						if !ipUtils.IsLoopBack(strings.ReplaceAll(ip, " ", "")) {
-							return strings.ReplaceAll(ip, " ", "")
+						if !ipUtils.IsLoopBack(candidate) {
+							return candidate
 						}
 					}
 				}
@@ -52,15 +53,15 @@ func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *co
 	for _, header := range ipHeaders {
 		if ips, ok := request.Header[header]; ok {
 			for _, ip := range ips {
-				if ipUtils.IsValidPublicIp(strings.ReplaceAll(ip, " ", "")) {
-					return strings.ReplaceAll(ip, " ", "")
+				if ipUtils.IsValidPublicIp(ipUtils.NormalizeIp(ip)) {
+					return ipUtils.NormalizeIp(ip)
 				}
 			}
 
 			// If not public default to loopback check
 			for _, ip := range ips {
-				if !ipUtils.IsLoopBack(strings.ReplaceAll(ip, " ", "")) {
-					return strings.ReplaceAll(ip, " ", "")
+				if !ipUtils.IsLoopBack(ipUtils.NormalizeIp(ip)) {
+					return ipUtils.NormalizeIp(ip)
 				}
 			}
 		}
@@ -75,13 +76,15 @@ func (u *RequestUtils) GetRemoteIpFromRequest(request *http.Request) string {
 
 func getValidIp(ips []string) string {
 	for _, extracted := range ips {
-		if ipUtils.IsValidPublicIp(strings.ReplaceAll(extracted, " ", "")) {
-			return strings.ReplaceAll(extracted, " ", "")
+		ip := ipUtils.NormalizeIp(extracted)
+		if ipUtils.IsValidPublicIp(ip) {
+			return ip
 		}
 	}
 	for _, extracted := range ips {
-		if !ipUtils.IsLoopBack(strings.ReplaceAll(extracted, " ", "")) {
-			return strings.ReplaceAll(extracted, " ", "")
+		ip := ipUtils.NormalizeIp(extracted)
+		if !ipUtils.IsLoopBack(ip) {
+			return ip
 		}
 	}
 	return ""
