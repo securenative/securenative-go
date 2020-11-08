@@ -3,6 +3,7 @@ package utils
 import (
 	"net"
 	"regexp"
+	"strings"
 )
 
 var ValidIpv4Pattern, _ = regexp.Compile("(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])")
@@ -48,4 +49,8 @@ func (u *IpUtils) IsLoopBack(ip string) bool {
 		return false
 	}
 	return parsedIp.IsLoopback()
+}
+
+func (u *IpUtils) NormalizeIp(ip string) string {
+	return strings.ReplaceAll(ip, " ", "")
 }

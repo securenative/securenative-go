@@ -3,7 +3,11 @@ package utils
 import (
 	"github.com/securenative/securenative-go/config"
 	"net/http"
+	"strings"
 )
+
+var ipHeaders = []string{"x-forwarded-for", "x-client-ip", "x-real-ip", "x-forwarded", "x-cluster-client-ip", "forwarded-for", "forwarded", "via"}
+var ipUtils = NewIpUtils()
 
 type RequestUtils struct{}
 
@@ -23,15 +27,44 @@ func (u *RequestUtils) GetSecureHeaderFromRequest(request *http.Request) string 
 func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *config.SecureNativeOptions) string {
 	if options != nil && len(options.ProxyHeaders) > 0 {
 		for _, header := range options.ProxyHeaders {
-			ip := request.Header[header][0]
-			if len(ip) > 0 || ip != "" {
-				return ip
+			values := request.Header[header]
+			for _, ip := range values {
+				if len(ip) > 0 || ip != "" {
+					if strings.Contains(ip, ",") {
+						ips := strings.Split(ip, ",")
+						extracted := getValidIp(ips)
+						if extracted != "" {
+							return extracted
+						}
+					} else {
+						candidate := ipUtils.NormalizeIp(ip)
+						if ipUtils.IsValidPublicIp(candidate) {
+							return candidate
+						}
+						if !ipUtils.IsLoopBack(candidate) {
+							return candidate
+						}
+					}
+				}
 			}
 		}
 	}
 
-	if ip, ok := request.Header["X-Forwarded-For"]; ok {
-		return ip[0]
+	for _, header := range ipHeaders {
+		if ips, ok := request.Header[header]; ok {
+			for _, ip := range ips {
+				if ipUtils.IsValidPublicIp(ipUtils.NormalizeIp(ip)) {
+					return ipUtils.NormalizeIp(ip)
+				}
+			}
+
+			// If not public default to loopback check
+			for _, ip := range ips {
+				if !ipUtils.IsLoopBack(ipUtils.NormalizeIp(ip)) {
+					return ipUtils.NormalizeIp(ip)
+				}
+			}
+		}
 	}
 
 	return request.RemoteAddr
@@ -39,4 +72,20 @@ func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *co
 
 func (u *RequestUtils) GetRemoteIpFromRequest(request *http.Request) string {
 	return request.RemoteAddr
+}
+
+func getValidIp(ips []string) string {
+	for _, extracted := range ips {
+		ip := ipUtils.NormalizeIp(extracted)
+		if ipUtils.IsValidPublicIp(ip) {
+			return ip
+		}
+	}
+	for _, extracted := range ips {
+		ip := ipUtils.NormalizeIp(extracted)
+		if !ipUtils.IsLoopBack(ip) {
+			return ip
+		}
+	}
+	return ""
 }
