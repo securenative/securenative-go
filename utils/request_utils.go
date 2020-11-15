@@ -53,15 +53,20 @@ func (u *RequestUtils) GetClientIpFromRequest(request *http.Request, options *co
 	for _, header := range ipHeaders {
 		if ips, ok := request.Header[header]; ok {
 			for _, ip := range ips {
-				if ipUtils.IsValidPublicIp(ipUtils.NormalizeIp(ip)) {
-					return ipUtils.NormalizeIp(ip)
-				}
-			}
-
-			// If not public default to loopback check
-			for _, ip := range ips {
-				if !ipUtils.IsLoopBack(ipUtils.NormalizeIp(ip)) {
-					return ipUtils.NormalizeIp(ip)
+				if strings.Contains(ip, ",") {
+					ips := strings.Split(ip, ",")
+					extracted := getValidIp(ips)
+					if extracted != "" {
+						return extracted
+					}
+				} else {
+					candidate := ipUtils.NormalizeIp(ip)
+					if ipUtils.IsValidPublicIp(candidate) {
+						return candidate
+					}
+					if !ipUtils.IsLoopBack(candidate) {
+						return candidate
+					}
 				}
 			}
 		}
