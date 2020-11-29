@@ -27,7 +27,7 @@ func FromHttpRequest(request *http.Request, options *config.SecureNativeOptions)
 		clientToken = cookie.Value
 	}
 
-	headers := parseHeaders(request)
+	headers := requestUtils.GetHeadersFromRequest(request, options)
 	if u.IsNilOrEmpty(clientToken) {
 		clientToken = requestUtils.GetSecureHeaderFromRequest(request)
 	}
@@ -41,13 +41,4 @@ func FromHttpRequest(request *http.Request, options *config.SecureNativeOptions)
 		Method:      request.Method,
 		Body:        "",
 	}
-}
-
-func parseHeaders(request *http.Request) map[string]string {
-	headers := map[string]string{}
-	for name, values := range request.Header {
-		headers[name] = values[0]
-	}
-
-	return headers
 }

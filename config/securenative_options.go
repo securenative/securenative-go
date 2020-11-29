@@ -13,6 +13,8 @@ type SecureNativeOptions struct {
 	LogLevel         string   `yaml:"SECURENATIVE_LOG_LEVEL"`
 	FailOverStrategy string   `yaml:"SECURENATIVE_FAILOVER_STRATEGY"`
 	ProxyHeaders     []string `yaml:"SECURENATIVE_PROXY_HEADERS"`
+	PiiHeaders       []string `yaml:"SECURENATIVE_PII_HEADERS"`
+	PiiRegexPattern  string   `yaml:"SECURENATIVE_PII_REGEX_PATTERN"`
 }
 
 func DefaultSecureNativeOptions() SecureNativeOptions {
@@ -27,5 +29,7 @@ func DefaultSecureNativeOptions() SecureNativeOptions {
 		LogLevel:         "CRITICAL",
 		FailOverStrategy: enums.FailOverStrategy.FailOpen,
 		ProxyHeaders:     []string{},
+		PiiHeaders:       []string{},
+		PiiRegexPattern:  "",
 	}
 }

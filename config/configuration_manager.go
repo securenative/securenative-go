@@ -46,6 +46,8 @@ func (c *ConfigurationManager) LoadConfig(configPath string) SecureNativeOptions
 		LogLevel:         c.getStringEnvOrDefault(properties, "SECURENATIVE_LOG_LEVEL", options.LogLevel),
 		FailOverStrategy: c.getStringEnvOrDefault(properties, "SECURENATIVE_FAILOVER_STRATEGY", options.FailOverStrategy),
 		ProxyHeaders:     c.getSliceEnvOrDefault(properties, "SECURENATIVE_PROXY_HEADERS", options.ProxyHeaders),
+		PiiHeaders:       c.getSliceEnvOrDefault(properties, "SECURENATIVE_PII_HEADERS", options.PiiHeaders),
+		PiiRegexPattern:  c.getStringEnvOrDefault(properties, "SECURENATIVE_PII_REGEX_PATTERN", options.PiiRegexPattern),
 	}
 }
 
