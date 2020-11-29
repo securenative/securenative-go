@@ -3,9 +3,11 @@ package utils
 import (
 	"github.com/securenative/securenative-go/config"
 	"net/http"
+	"regexp"
 	"strings"
 )
 
+var piiHeaders = []string{"authorization", "access_token", "apikey", "password", "passwd", "secret", "api_key"}
 var ipHeaders = []string{"x-forwarded-for", "x-client-ip", "x-real-ip", "x-forwarded", "x-cluster-client-ip", "forwarded-for", "forwarded", "via"}
 var ipUtils = NewIpUtils()
 
@@ -93,4 +95,40 @@ func getValidIp(ips []string) string {
 		}
 	}
 	return ""
+}
+
+func (u *RequestUtils) GetHeadersFromRequest(request *http.Request, options *config.SecureNativeOptions) map[string]string {
+	headers := map[string]string{}
+	if options != nil && len(options.PiiHeaders) > 0 {
+		for name, values := range request.Header {
+			if !contains(options.PiiHeaders, name) && !contains(options.PiiHeaders, strings.ToUpper(name)) {
+				headers[name] = values[0]
+			}
+		}
+	} else if options != nil && options.PiiRegexPattern != "" {
+		pattern, _ := regexp.Compile(options.PiiRegexPattern)
+		for name, values := range request.Header {
+			if !pattern.MatchString(name) {
+				headers[name] = values[0]
+			}
+		}
+
+	} else {
+		for name, values := range request.Header {
+			if !contains(piiHeaders, name) && !contains(piiHeaders, strings.ToUpper(name)) {
+				headers[name] = values[0]
+			}
+		}
+	}
+
+	return headers
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }

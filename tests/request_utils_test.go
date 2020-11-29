@@ -2,7 +2,6 @@ package tests
 
 import (
 	"github.com/securenative/securenative-go/config"
-	"github.com/securenative/securenative-go/context"
 	"github.com/securenative/securenative-go/utils"
 	"net/http"
 	"testing"
@@ -316,6 +315,7 @@ func TestIpExtractionUsingPriorityWithoutXForwardedFor(t *testing.T) {
 }
 
 func TestPiiDataExtractionFromHeaders(t *testing.T) {
+	requestUtils := utils.RequestUtils{}
 	headers := map[string][]string{
 		"Host":            {"net.example.com"},
 		"User-Agent":      {"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5 (.NET CLR 3.5.30729)"},
@@ -340,7 +340,7 @@ func TestPiiDataExtractionFromHeaders(t *testing.T) {
 		Header: headers,
 	}
 
-	h := context.ParseHeaders(request)
+	h := requestUtils.GetHeadersFromRequest(request, nil)
 	if Contains(h, "authorization") != false {
 		t.Errorf("Test Failed: extracted header: %s, not to be present", "authorization")
 	}
@@ -363,6 +363,122 @@ func TestPiiDataExtractionFromHeaders(t *testing.T) {
 
 	if Contains(h, "api_key") != false {
 		t.Errorf("Test Failed: extracted header: %s, not to be present", "api_key")
+	}
+}
+
+func TestPiiDataExtractionFromCustomHeaders(t *testing.T) {
+	requestUtils := utils.RequestUtils{}
+	headers := map[string][]string{
+		"Host":            {"net.example.com"},
+		"User-Agent":      {"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5 (.NET CLR 3.5.30729)"},
+		"Accept":          {"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"},
+		"Accept-Language": {"en-us,en;q=0.5"},
+		"Accept-Encoding": {"gzip,deflate"},
+		"Accept-Charset":  {"ISO-8859-1,utf-8;q=0.7,*;q=0.7"},
+		"Keep-Alive":      {"300"},
+		"Connection":      {"keep-alive"},
+		"Cookie":          {"PHPSESSID=r2t5uvjq435r4q7ib3vtdjq120"},
+		"Pragma":          {"no-cache"},
+		"Cache-Control":   {"no-cache"},
+		"authorization":   {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"access_token":    {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"apikey":          {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"password":        {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"passwd":          {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"secret":          {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"api_key":         {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+	}
+	request := &http.Request{
+		Header: headers,
+	}
+
+	options := getSecureNativeOptions()
+	options.PiiHeaders = []string{
+		"authorization",
+		"access_token",
+		"apikey",
+		"password",
+		"passwd",
+		"secret",
+		"api_key",
+	}
+	h := requestUtils.GetHeadersFromRequest(request, &options)
+	if Contains(h, "authorization") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "authorization")
+	}
+
+	if Contains(h, "access_token") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "access_token")
+	}
+
+	if Contains(h, "apikey") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "apikey")
+	}
+
+	if Contains(h, "password") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "password")
+	}
+
+	if Contains(h, "secret") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "secret")
+	}
+
+	if Contains(h, "api_key") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "api_key")
+	}
+}
+
+func TestPiiDataExtractionFromRegexPattern(t *testing.T) {
+	requestUtils := utils.RequestUtils{}
+	headers := map[string][]string{
+		"Host":            {"net.example.com"},
+		"User-Agent":      {"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5 (.NET CLR 3.5.30729)"},
+		"Accept":          {"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"},
+		"Accept-Language": {"en-us,en;q=0.5"},
+		"Accept-Encoding": {"gzip,deflate"},
+		"Accept-Charset":  {"ISO-8859-1,utf-8;q=0.7,*;q=0.7"},
+		"Keep-Alive":      {"300"},
+		"Connection":      {"keep-alive"},
+		"Cookie":          {"PHPSESSID=r2t5uvjq435r4q7ib3vtdjq120"},
+		"Pragma":          {"no-cache"},
+		"Cache-Control":   {"no-cache"},
+		"http_auth_authorization":   {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"http_auth_access_token":    {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"http_auth_apikey":          {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"http_auth_password":        {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"http_auth_passwd":          {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"http_auth_secret":          {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+		"http_auth_api_key":         {"ylSkZIjbdWybfs4fUQe9BqP0LH5Z"},
+	}
+	request := &http.Request{
+		Header: headers,
+	}
+
+	options := getSecureNativeOptions()
+	options.PiiRegexPattern = "((?i)(http_auth_)(\\w+)?)"
+	h := requestUtils.GetHeadersFromRequest(request, &options)
+	if Contains(h, "http_auth_authorization") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "http_auth_authorization")
+	}
+
+	if Contains(h, "http_auth_access_token") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "http_auth_access_token")
+	}
+
+	if Contains(h, "http_auth_apikey") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "http_auth_apikey")
+	}
+
+	if Contains(h, "http_auth_password") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "http_auth_password")
+	}
+
+	if Contains(h, "http_auth_secret") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "http_auth_secret")
+	}
+
+	if Contains(h, "http_auth_api_key") != false {
+		t.Errorf("Test Failed: extracted header: %s, not to be present", "http_auth_api_key")
 	}
 }
 

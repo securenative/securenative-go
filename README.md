@@ -256,4 +256,55 @@ func VerifyWebHook(request *http.Request) bool {
     return sn.VerifyRequestPayload(request)
 }
  ```
+
+## Extract proxy headers from cloud providers
+
+You can specify custom header keys to allow extraction of client ip from different providers.
+This example demonstrates the usage of proxy headers for ip extraction from Cloudflare.
+
+### Option 1: Using config file
+```yaml
+SECURENATIVE_API_KEY: "YOUR_API_KEY"
+SECURENATIVE_PROXY_HEADERS: ["CF-Connecting-IP"]
+```
+
+Initialize sdk as shown above.
+
+### Options 2: Using ConfigurationBuilder
+
+```go
+options := config.DefaultSecureNativeOptions()
+options.ApiKey = "API_KEY"
+options.ProxyHeaders = []string{"CF-Connecting-IP"}
     
+sn, err := sdk.InitSDK(options)
+if err != nil {
+     log.Fatal("Do some error handling")
+}
+```
+    
+## Remove PII Data From Headers
+
+By default, SecureNative SDK remove any known pii headers from the received request.
+We also support using custom pii headers and regex matching via configuration, for example:
+
+### Option 1: Using config file
+```yaml
+SECURENATIVE_API_KEY: "YOUR_API_KEY"
+SECURENATIVE_PII_HEADERS: ["apiKey"]
+```
+
+Initialize sdk as shown above.
+
+### Options 2: Using ConfigurationBuilder
+
+```go
+options := config.DefaultSecureNativeOptions()
+options.ApiKey = "API_KEY"
+options.PiiHeaders = []string{"authentication"}
+    
+sn, err := sdk.InitSDK(options)
+if err != nil {
+     log.Fatal("Do some error handling")
+}
+```
