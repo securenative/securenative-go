@@ -301,7 +301,7 @@ Initialize sdk as shown above.
 ```go
 options := config.DefaultSecureNativeOptions()
 options.ApiKey = "YOUR_API_KEY"
-options.PiiHeaders = []string{"authentication"}
+options.PiiRegexPattern = "((?i)(http_auth_)(\w+)?)"
     
 sn, err := sdk.InitSDK(options)
 if err != nil {
