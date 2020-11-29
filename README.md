@@ -87,7 +87,7 @@ import (
 
 func main() {
     options := config.DefaultSecureNativeOptions()
-    options.ApiKey = "API_KEY"
+    options.ApiKey = "YOUR_API_KEY"
     options.MaxEvents = 10
     options.LogLevel = "ERROR"
     sn, err := sdk.InitSDK(options)
@@ -274,7 +274,7 @@ Initialize sdk as shown above.
 
 ```go
 options := config.DefaultSecureNativeOptions()
-options.ApiKey = "API_KEY"
+options.ApiKey = "YOUR_API_KEY"
 options.ProxyHeaders = []string{"CF-Connecting-IP"}
     
 sn, err := sdk.InitSDK(options)
@@ -300,7 +300,7 @@ Initialize sdk as shown above.
 
 ```go
 options := config.DefaultSecureNativeOptions()
-options.ApiKey = "API_KEY"
+options.ApiKey = "YOUR_API_KEY"
 options.PiiHeaders = []string{"authentication"}
     
 sn, err := sdk.InitSDK(options)
