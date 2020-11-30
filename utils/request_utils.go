@@ -101,7 +101,7 @@ func (u *RequestUtils) GetHeadersFromRequest(request *http.Request, options *con
 	headers := map[string]string{}
 	if options != nil && len(options.PiiHeaders) > 0 {
 		for name, values := range request.Header {
-			if !contains(options.PiiHeaders, name) && !contains(options.PiiHeaders, strings.ToUpper(name)) {
+			if !contains(options.PiiHeaders, strings.ToLower(name)) && !contains(options.PiiHeaders, strings.ToUpper(name)) {
 				headers[name] = values[0]
 			}
 		}
@@ -115,7 +115,7 @@ func (u *RequestUtils) GetHeadersFromRequest(request *http.Request, options *con
 
 	} else {
 		for name, values := range request.Header {
-			if !contains(piiHeaders, name) && !contains(piiHeaders, strings.ToUpper(name)) {
+			if !contains(piiHeaders, strings.ToLower(name)) && !contains(piiHeaders, strings.ToUpper(name)) {
 				headers[name] = values[0]
 			}
 		}
